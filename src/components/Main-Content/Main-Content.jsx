@@ -49,12 +49,12 @@ class MainContent extends React.Component {
   // Takes last object's id from the todos array in oldid
   // Increments it by 1
   // Creates new todo objet with id as newid, text from the state and completed default as false
-  addTodo = (text, date, urgentLevel) => {
+  addTodo = (title, date, urgentLevel) => {
     let oldid = this.state.todos[this.state.todos.length - 1].id;
     let newid = oldid + 1;
     const newTodo = {
       id: newid,
-      text: text,
+      title: title,
       date: date,
       urgentLevel: urgentLevel,
       completed: false

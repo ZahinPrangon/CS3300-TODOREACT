@@ -1,20 +1,30 @@
-import React from 'react'
+import React from "react";
+import { Link } from "react-router-dom";
 
 function Header() {
-    return (
-        <div style = {headerStyle}>
-            <h1>TODOLIST</h1>
+  return (
+    <nav className="bp3-navbar bp3-dark">
+      <div style={{ margin: "0 auto" }}>
+        <div className="bp3-navbar-group bp3-align-left">
+          <div className="bp3-navbar-heading">TODO LIST</div>
         </div>
-    )
+        <div className="bp3-navbar-group bp3-align-right">
+          <Link to="/" className="bp3-button bp3-minimal bp3-icon-home">
+            Home
+          </Link>
+          <span className="bp3-navbar-divider"></span>
+          <Link
+            className="bp3-button bp3-minimal bp3-icon-calendar"
+            to="/calendar"
+          ></Link>
+          <button
+            to="/notifications"
+            className="bp3-button bp3-minimal bp3-icon-notifications"
+          ></button>
+        </div>
+      </div>
+    </nav>
+  );
 }
-// Header Styles
-const headerStyle = {
-    background: 'grey',
-    color: '#fff',
-    fontWeight: '600',
-    letterSpacing: '10px',
-    textAlign: 'center',
-    padding: '10px',
-    marginBottom: '5px'
-}
+
 export default Header;

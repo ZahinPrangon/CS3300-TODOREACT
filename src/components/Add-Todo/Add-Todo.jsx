@@ -2,9 +2,9 @@ import React from "react";
 import DateTimePicker from "react-datetime-picker";
 
 class AddTodo extends React.Component {
-  // Component state to get the text from the input
+  // Component state to get the title from the input
   state = {
-    text: "",
+    title: "",
     date: new Date(),
     urgentLevel: "one"
   };
@@ -27,20 +27,20 @@ class AddTodo extends React.Component {
   onSubmit = e => {
     // Prevents from automatically submitting the form on load
     e.preventDefault();
-    // if nothing is entered in the text box
-    if (this.state.text === "") {
+    // if nothing is entered in the title box
+    if (this.state.title === "") {
       this.props.setAlert("Please enter something");
     } else if (this.state.date === "") {
       this.props.setAlert("Please enter a date and time");
     } else {
-      // Adding addTodo function as prop and passing the state's text as param
+      // Adding addTodo function as prop and passing the state's title as param
       this.props.addTodo(
-        this.state.text,
+        this.state.title,
         this.state.date,
         this.state.urgentLevel
       );
       // Changing the state to an empty string
-      this.setState({ text: "", date: "", urgentLevel: "one" });
+      this.setState({ title: "", date: "", urgentLevel: "one" });
     }
   };
 
@@ -55,10 +55,10 @@ class AddTodo extends React.Component {
           <input
             className="form-control"
             type="text"
-            name="text"
+            name="title"
             placeholder="Add Todo..."
             style={{ flex: "10", marginBottom: "5px" }}
-            value={this.state.text}
+            value={this.state.title}
             onChange={this.onChange}
           />
           <DateTimePicker

@@ -28,7 +28,7 @@ function TodoItem(props) {
       />
 
       <div style={props.item.completed ? completedStyle : null}>
-        <h3>{props.item.text}</h3>
+        <h3>{props.item.title}</h3>
         <Moment format="MMMM Do YYYY dddd HH:mm">{props.item.date}</Moment>
         <h4>Importance Level: {props.item.urgentLevel}</h4>
       </div>
