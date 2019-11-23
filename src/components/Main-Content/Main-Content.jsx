@@ -7,7 +7,7 @@ import "./Main-Content.styles.scss";
 import { Summary } from "../Summary/Summary";
 import { format, isToday, isTomorrow, isThisWeek, isThisYear } from "date-fns";
 
-import { MenuTodos } from "../MenuTodos/MenuTodos";
+import { Label, Button } from "@blueprintjs/core";
 // import DateFilter from "../Todo/DateFilter/DateFilter";
 
 class MainContent extends React.Component {
@@ -17,8 +17,10 @@ class MainContent extends React.Component {
     this.state = {
       todos: todosData,
       alert: null,
+      all: false,
       today: false,
-      tommorow: false
+      tommorow: false,
+      thisWeek: false
     };
   }
 
@@ -82,10 +84,32 @@ class MainContent extends React.Component {
     }, 4000);
   };
 
+  todayTodos = () => {
+    const { today } = this.state;
+    this.setState({ today: !today });
+  };
+
+  tommorowTodos = () => {
+    const { tommorow } = this.state;
+    this.setState({ tommorow: !tommorow });
+  };
+
+  thisWeekTodos = () => {
+    const { thisWeek } = this.state;
+    this.setState({ thisWeek: !thisWeek });
+  };
+
+  allTodos = () => {
+    const { all } = this.state;
+    this.setState({ all: !all });
+  };
+
   render() {
     // Destructuring the state
     const { todos, alert } = this.state;
+    const totalTodos = todos.length;
 
+    const totalPendingTodos = todos.filter(todo => !todo.completed).length;
     const todoItems = todos.map(item => (
       <TodoItem
         key={item.id}
@@ -95,33 +119,68 @@ class MainContent extends React.Component {
       />
     ));
 
-    const laterItems = todos.map(item => {
-      if (isToday(item.date) === true) {
-        return (
-          <TodoItem
-            key={item.id}
-            handleChange={this.handleChange}
-            item={item}
-            deleteTodo={this.deleteTodo}
-          />
-        );
-      } else if (isTomorrow(item.date) === true) {
-        return (
-          <TodoItem
-            key={item.id}
-            handleChange={this.handleChange}
-            item={item}
-            deleteTodo={this.deleteTodo}
-          />
-        );
-      }
+    const todayItemsArray = todos.filter(todo => isToday(todo.date) === true);
+    const todayItems = todayItemsArray.map(item => (
+      <TodoItem
+        key={item.id}
+        handleChange={this.handleChange}
+        item={item}
+        deleteTodo={this.deleteTodo}
+      />
+    ));
+
+    const tommorowItemsArray = todos.filter(
+      todo => isTomorrow(todo.date) === true
+    );
+    const tommorowItems = tommorowItemsArray.map(item => (
+      <TodoItem
+        key={item.id}
+        handleChange={this.handleChange}
+        item={item}
+        deleteTodo={this.deleteTodo}
+      />
+    ));
+
+    const thisWeek = todos.filter(item => isThisWeek(item.date) === true);
+    const thisWeekItems = thisWeek.map(item => {
+      return (
+        <TodoItem
+          key={item.id}
+          handleChange={this.handleChange}
+          item={item}
+          deleteTodo={this.deleteTodo}
+        />
+      );
     });
 
+    // {{<DateFilter todos={todos} />}}
     return (
       <div className="todo-list">
         <div className="row">
           <div className="col-md">
-            <MenuTodos />{" "}
+            <span style={{ color: "Red", fontWeight: "bold", padding: "5px" }}>
+              Upcoming
+            </span>
+            <span>{`${totalPendingTodos} of ${totalTodos} left`}</span>
+            <div>
+              <Button text="Today" onClick={this.todayTodos.bind(this)} />
+              <div>{this.state.today && todayItems}</div>
+            </div>
+            <div>
+              <Button text="Tommorow" onClick={this.tommorowTodos.bind(this)} />
+              <div>{this.state.tommorow && tommorowItems}</div>
+            </div>
+            <div>
+              <Button text="All" onClick={this.allTodos.bind(this)} />
+              <div>{this.state.all && todoItems}</div>
+            </div>
+            <div>
+              <Button
+                text="This Week"
+                onClick={this.thisWeekTodos.bind(this)}
+              />
+              <div>{this.state.thisWeek && thisWeekItems}</div>
+            </div>
           </div>
           <div style={{ display: "flex" }}>
             <div className="summary">
@@ -131,7 +190,6 @@ class MainContent extends React.Component {
             <div className="col-md todo">
               <Alert alert={alert} />
               <AddTodo addTodo={this.addTodo} setAlert={this.setAlert} />
-              {todoItems}
             </div>
           </div>
         </div>
