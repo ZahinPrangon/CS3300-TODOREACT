@@ -6,24 +6,58 @@ import todosData from "../Todo-Data/Todo-Data";
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
-const state = {
-  todos: todosData,
-  view: "day"
-};
+class CalendarUI extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      todos: todosData,
+      view: "day",
+      visible: false
+    };
+  }
 
-const CalendarUI = () => (
-  <div style={{ height: 700, padding: "20px" }}>
-    <Calendar
-      selectable
-      localizer={localizer}
-      events={state.todos}
-      showMultiDayTimes
-      step={60}
-      popup={true}
-      // max={new Date("December 31, 2099")}
-      views={["month", "week", "day", "agenda"]}
-    />
-  </div>
-);
+  showEvent = (todos, visible) => {
+    alert(todos.title);
+    console.log(todos);
+  };
+
+  handleSelect = ({ start, end, urgentLevel }) => {
+    let oldid = this.state.todos[this.state.todos.length - 1].id;
+    let newid = oldid + 1;
+
+    const title = window.prompt("Add New Todo");
+    if (title && urgentLevel) {
+      this.setState({
+        todos: [
+          ...this.state.todos,
+          {
+            start,
+            end,
+            title,
+            newid
+          }
+        ]
+      });
+    }
+  };
+
+  render() {
+    return (
+      <div style={{ height: 700, padding: "20px" }}>
+        <Calendar
+          selectable
+          localizer={localizer}
+          events={this.state.todos}
+          showMultiDayTimes
+          step={60}
+          popup={true}
+          onSelectEvent={this.showEvent} // Shows todo details
+          onSelectSlot={this.handleSelect}
+          views={["month", "week", "day", "agenda"]}
+        />
+      </div>
+    );
+  }
+}
 
 export default CalendarUI;

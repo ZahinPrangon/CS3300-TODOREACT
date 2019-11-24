@@ -1,16 +1,27 @@
 import React from "react";
 import DateTimePicker from "react-datetime-picker";
+import "react-datepicker/dist/react-datepicker.css";
+
+import {
+  NotificationContainer,
+  NotificationManager
+} from "react-notifications";
 
 class AddTodo extends React.Component {
   // Component state to get the title from the input
   state = {
     title: "",
-    date: new Date(),
+    startDate: new Date(),
+    endDate: "",
     urgentLevel: "one"
   };
 
-  onChangeDate = date => {
-    this.setState({ date: date });
+  onChangeStartDate = date => {
+    this.setState({ startDate: date });
+  };
+
+  onChangeEndDate = date => {
+    this.setState({ endDate: date });
   };
 
   // Takes the input state from the event's target value
@@ -19,7 +30,6 @@ class AddTodo extends React.Component {
   };
 
   onChangeUrgent = event => {
-    console.log(this.state.urgentLevel);
     this.setState({ urgentLevel: event.target.value });
   };
 
@@ -29,18 +39,25 @@ class AddTodo extends React.Component {
     e.preventDefault();
     // if nothing is entered in the title box
     if (this.state.title === "") {
-      this.props.setAlert("Please enter something");
-    } else if (this.state.date === "") {
-      this.props.setAlert("Please enter a date and time");
+      NotificationManager.warning("Please enter a title");
+    } else if (this.state.startDate === "") {
+      NotificationManager.warning("Please enter a start date and time");
     } else {
       // Adding addTodo function as prop and passing the state's title as param
       this.props.addTodo(
         this.state.title,
-        this.state.date,
+        this.state.startDate,
+        this.state.endDate,
         this.state.urgentLevel
       );
+      NotificationManager.success("TODO ADDED", this.state.title);
       // Changing the state to an empty string
-      this.setState({ title: "", date: "", urgentLevel: "one" });
+      this.setState({
+        title: "",
+        startDate: "",
+        endDate: "",
+        urgentLevel: "one"
+      });
     }
   };
 
@@ -52,6 +69,7 @@ class AddTodo extends React.Component {
           onSubmit={this.onSubmit}
           style={{ display: "flex", flexDirection: "column" }}
         >
+          <label>Enter your todo</label>
           <input
             className="form-control"
             type="text"
@@ -61,15 +79,31 @@ class AddTodo extends React.Component {
             value={this.state.title}
             onChange={this.onChange}
           />
+          <label>Start Date</label>
+
           <DateTimePicker
             className="form-control"
-            onChange={this.onChangeDate}
-            value={this.state.date}
+            onChange={this.onChangeStartDate}
+            value={this.state.startDate}
             style={{ marginBottom: "5px" }}
             calendarAriaLabel="close"
           />
 
-          <select value={this.state.urgentLevel} onChange={this.onChangeUrgent}>
+          <label>End Date</label>
+
+          <DateTimePicker
+            className="form-control"
+            onChange={this.onChangeEndDate}
+            value={this.state.endDate}
+            style={{ marginBottom: "5px" }}
+            calendarAriaLabel="close"
+          />
+          <label>Enter the level of urgent for this todo</label>
+          <select
+            className="form-control"
+            value={this.state.urgentLevel}
+            onChange={this.onChangeUrgent}
+          >
             <option value="one">one</option>
             <option value="two">two</option>
             <option value="three">three</option>
@@ -83,6 +117,7 @@ class AddTodo extends React.Component {
             style={{ flex: "1", marginTop: "5px" }}
           />
         </form>
+        <NotificationContainer />
       </div>
     );
   }

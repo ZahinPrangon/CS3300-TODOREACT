@@ -1,4 +1,5 @@
 import React from "react";
+import { Divider } from "@blueprintjs/core";
 
 export const Summary = props => {
   let one = 0;
@@ -22,14 +23,32 @@ export const Summary = props => {
   }
 
   return (
-    <div>
-      <ul>
-        <li>Urgent Level 1: {one}</li>
-        <li>Urgent Level 2: {two}</li>
-        <li>Urgent Level 3: {three}</li>
-        <li>Urgent Level 4: {four}</li>
-        <li>Urgent Level 5: {five}</li>
-      </ul>
-    </div>
+    <ul className="list-group">
+      <li className="list-group-item d-flex justify-content-between align-items-center">
+        Urgent Level 1:
+        <Divider />
+        <span className="badge badge-primary badge-pill">{one}</span>
+      </li>
+      <li className="list-group-item d-flex justify-content-between align-items-center">
+        Urgent Level 2:
+        <Divider />
+        <span className="badge badge-primary badge-pill">{two}</span>
+      </li>
+      <li className="list-group-item d-flex justify-content-between align-items-center">
+        Urgent Level 3:
+        <Divider />
+        <span className="badge badge-primary badge-pill">{three}</span>
+      </li>
+      <li className="list-group-item d-flex justify-content-between align-items-center">
+        Urgent Level 4:
+        <Divider />
+        <span className="badge badge-primary badge-pill">{four}</span>
+      </li>
+      <li className="list-group-item d-flex justify-content-between align-items-center">
+        Urgent Level 5:
+        <Divider />
+        <span className="badge badge-primary badge-pill">{five}</span>
+      </li>
+    </ul>
   );
 };

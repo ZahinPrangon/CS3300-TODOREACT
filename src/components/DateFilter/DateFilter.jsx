@@ -1,21 +1,31 @@
-import React from "react";
-// import PropTypes from "prop-types";
-import { AnchorButton, Popover, Position } from "@blueprintjs/core";
-import DateSelector from "../DateSelector/DateSelector";
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import { H6 } from "@blueprintjs/core";
 
 const DateFilter = ({ todos, onDateFilterChange }) => {
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   return (
-    <div>
-      <Popover
-        content={<DateSelector todos={todos} onSelect={onDateFilterChange} />}
-        position={Position.BOTTOM_LEFT}
-        minimal
-      >
-        <AnchorButton minimal rightIcon="caret-down" icon="time" className="">
-          TODOS
-        </AnchorButton>
-      </Popover>
-    </div>
+    <>
+      <H6>START DATE</H6>
+      <DatePicker
+        className="form-control"
+        selected={startDate}
+        onChange={date => setStartDate(date)}
+        selectsStart
+        startDate={startDate}
+        endDate={endDate}
+      />
+      <H6>END DATE</H6>
+      <DatePicker
+        className="form-control"
+        selected={endDate}
+        onChange={date => setEndDate(date)}
+        selectsEnd
+        endDate={endDate}
+        minDate={startDate}
+      />
+    </>
   );
 };
 

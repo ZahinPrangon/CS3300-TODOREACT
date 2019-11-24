@@ -3,10 +3,16 @@ import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <nav className="bp3-navbar bp3-dark">
+    <nav className="bp3-navbar bp3-dark mb-2">
       <div style={{ margin: "0 auto" }}>
         <div className="bp3-navbar-group bp3-align-left">
-          <div className="bp3-navbar-heading">TODO LIST</div>
+          <Link
+            to="/"
+            className="bp3-navbar-heading"
+            style={{ textDecoration: "none" }}
+          >
+            TODO LIST
+          </Link>
         </div>
         <div className="bp3-navbar-group bp3-align-right">
           <Link to="/" className="bp3-button bp3-minimal bp3-icon-home">
@@ -17,10 +23,6 @@ function Header() {
             className="bp3-button bp3-minimal bp3-icon-calendar"
             to="/calendar"
           ></Link>
-          <button
-            to="/notifications"
-            className="bp3-button bp3-minimal bp3-icon-notifications"
-          ></button>
         </div>
       </div>
     </nav>

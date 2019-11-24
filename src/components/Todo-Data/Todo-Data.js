@@ -2,10 +2,9 @@ const todosData = [
   {
     id: 1,
     title: "Wake up at 6:30am",
-    start: new Date("November 23 2019 03:24:00"),
-    end: new Date("November 23 2019 04:24:00"),
+    start: new Date("November 24 2019 03:24:00"),
+    end: new Date("November 24 2019 04:24:00"),
     completed: false,
-    date: new Date(),
     urgentLevel: "three"
   },
   {
