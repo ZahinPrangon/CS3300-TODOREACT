@@ -1,5 +1,6 @@
 import React from "react";
 import Moment from "react-moment";
+import { H2, Divider, Checkbox, Button, Card, Tag } from "@blueprintjs/core";
 
 function TodoItem(props) {
   // Completed Styles
@@ -11,34 +12,58 @@ function TodoItem(props) {
 
   // Button Styles
   const btnStyle = {
-    background: "#ff0000",
-    color: "#fff",
-    border: "none",
-    padding: "5px 10px",
+    width: "10%",
     cursor: "pointer"
   };
 
   return (
-    <div className="todo-item ml-2">
-      <hr />
-      <input
-        type="checkbox"
-        checked={props.item.completed}
-        onChange={() => props.handleChange(props.item.id)}
-      />
-
+    <Card className="mb-1" h-50 interactive>
       <div style={props.item.completed ? completedStyle : null}>
-        <h3>{props.item.title}</h3>
-        <Moment format="MMMM Do YYYY dddd HH:mm">{props.item.date}</Moment>
-        <h4>Importance Level: {props.item.urgentLevel}</h4>
+        <Checkbox
+          large
+          type="checkbox"
+          className="text-center"
+          checked={props.item.completed}
+          onChange={() => props.handleChange(props.item.id)}
+        />
+        <Tag large className="text-right">
+          {props.item.type}
+        </Tag>
+        <H2 className="text-center">{props.item.title}</H2>
+        <div className="text-center">
+          <div>
+            <span className="mr-1">From</span>
+            <Moment className="mr-1" format="hh : mm a">
+              {props.item.start}
+            </Moment>
+            <Moment format="MMMM Do YYYY dddd">{props.item.start}</Moment>
+          </div>
+          <Divider />
+          <span className="mr-1">To</span>
+          <Moment className="mr-1" format="hh : mm a">
+            {props.item.end}
+          </Moment>
+          <Moment format="MMMM Do YYYY dddd">{props.item.end}</Moment>
+
+          <Divider />
+        </div>
+        <p className="text-center">
+          Importance Level: {props.item.urgentLevel}
+        </p>
       </div>
-      <button
-        onClick={props.deleteTodo.bind(this, props.item.id)}
-        style={btnStyle}
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "5px" }}
       >
-        DELETE
-      </button>
-    </div>
+        <Button
+          large
+          style={btnStyle}
+          type="button"
+          className="btn btn-primary"
+          icon="trash"
+          onClick={props.deleteTodo.bind(this, props.item.id)}
+        ></Button>
+      </div>
+    </Card>
   );
 }
 

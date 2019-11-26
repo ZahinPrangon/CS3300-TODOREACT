@@ -7,8 +7,8 @@ moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
 class CalendarUI extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       todos: todosData,
       view: "day",
@@ -18,27 +18,6 @@ class CalendarUI extends React.Component {
 
   showEvent = (todos, visible) => {
     alert(todos.title);
-    console.log(todos);
-  };
-
-  handleSelect = ({ start, end, urgentLevel }) => {
-    let oldid = this.state.todos[this.state.todos.length - 1].id;
-    let newid = oldid + 1;
-
-    const title = window.prompt("Add New Todo");
-    if (title && urgentLevel) {
-      this.setState({
-        todos: [
-          ...this.state.todos,
-          {
-            start,
-            end,
-            title,
-            newid
-          }
-        ]
-      });
-    }
   };
 
   render() {

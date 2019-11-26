@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@blueprintjs/core";
 
 function Header() {
   return (
@@ -19,10 +20,10 @@ function Header() {
             Home
           </Link>
           <span className="bp3-navbar-divider"></span>
-          <Link
+          <Button
             className="bp3-button bp3-minimal bp3-icon-calendar"
             to="/calendar"
-          ></Link>
+          ></Button>
         </div>
       </div>
     </nav>

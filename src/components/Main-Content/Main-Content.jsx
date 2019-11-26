@@ -1,31 +1,34 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import TodoItem from "../Todo-Item/Todo-Item";
 import todosData from "../Todo-Data/Todo-Data";
 import AddTodo from "../Add-Todo/Add-Todo";
 import Alert from "../Alert/Alert";
 import "./Main-Content.styles.css";
 import { Summary } from "../Summary/Summary";
-import { isToday, isTomorrow, isThisWeek } from "date-fns";
+import {
+  format,
+  isToday,
+  isTomorrow,
+  isThisWeek,
+  differenceInMinutes
+} from "date-fns";
 
 import {
-  Alignment,
   Classes,
   H3,
-  H5,
-  InputGroup,
-  Navbar,
-  Switch,
   Tab,
   Tabs,
-  Button,
-  ProgressBar,
   Divider,
-  ButtonGroup
+  Callout,
+  ProgressBar,
+  Button,
+  Overlay
 } from "@blueprintjs/core";
-
+import Clock from "react-live-clock";
 import { Example, handleBooleanChange } from "@blueprintjs/docs-theme";
-// import ChartUI from "../ChartUI/ChartUI";
-// import { Doughnut } from "react-chartjs-2";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 class MainContent extends React.Component {
   constructor(props) {
@@ -38,11 +41,15 @@ class MainContent extends React.Component {
       today: false,
       tommorow: false,
       thisWeek: false,
+      show: false,
+      search: "",
 
       activePanelOnly: false,
       animate: true,
       navbarTabId: "Today",
-      vertical: false
+      vertical: false,
+      view: "day",
+      visible: false
     };
   }
 
@@ -51,6 +58,10 @@ class MainContent extends React.Component {
   );
   toggleAnimate = handleBooleanChange(animate => this.setState({ animate }));
   toggleVertical = handleBooleanChange(vertical => this.setState({ vertical }));
+
+  showEvent = (todos, isOpen) => {
+    return alert(todos.start);
+  };
 
   // Update state so that the item with the given id flips changes from false to true
   // HandleChange function changes the state takes in previous state
@@ -77,7 +88,7 @@ class MainContent extends React.Component {
   // Takes last object's id from the todos array in oldid
   // Increments it by 1
   // Creates new todo objet with id as newid, text from the state and completed default as false
-  addTodo = (title, startDate, endDate, urgentLevel) => {
+  addTodo = (title, startDate, endDate, urgentLevel, type) => {
     let oldid = this.state.todos[this.state.todos.length - 1].id;
     let newid = oldid + 1;
     const newTodo = {
@@ -86,11 +97,11 @@ class MainContent extends React.Component {
       start: startDate,
       end: endDate,
       urgentLevel: urgentLevel,
+      type: type,
       completed: false
     };
     // Sets State with todos as previous todos and then adding the new todo in the last of the array
     this.setState({ todos: [...this.state.todos, newTodo] });
-    console.log(newTodo);
   };
 
   // Deletes Todos
@@ -137,33 +148,25 @@ class MainContent extends React.Component {
   handleNavbarTabChange = (navbarTabId: TabId) =>
     this.setState({ navbarTabId });
 
+  handleSearchChange = e => {
+    console.log(e.target.value);
+    this.setState({
+      search: e.target.value
+    });
+  };
+  showCalendar = () => {
+    const { show } = this.state;
+    this.setState({ show: !show });
+    console.log(this.state.show);
+  };
+
   render() {
-    const options = (
-      <div>
-        <H5>Props</H5>
-        <Switch
-          checked={this.state.animate}
-          label="Animate indicator"
-          onChange={this.toggleAnimate}
-        />
-        <Switch
-          checked={this.state.vertical}
-          label="Use vertical tabs"
-          onChange={this.toggleVertical}
-        />
-        <Switch
-          checked={this.state.activePanelOnly}
-          label="Render active tab panel only"
-          onChange={this.toggleActiveOnly}
-        />
-      </div>
-    );
-
+    moment.locale("en-GB");
+    const localizer = momentLocalizer(moment);
     // Destructuring the state
-    const { todos, alert } = this.state;
-    const totalTodos = todos.length;
+    const { todos, alert, show } = this.state;
 
-    const totalPendingTodos = todos.filter(todo => !todo.completed).length;
+    // const totalPendingTodos = todos.filter(todo => !todo.completed).length;
     const todoItems = todos.map(item => (
       <TodoItem
         key={item.id}
@@ -173,192 +176,264 @@ class MainContent extends React.Component {
       />
     ));
 
-    const todayItemsArray = todos.filter(todo => isToday(todo.start) === true);
-    const todayItems = todayItemsArray.map(item => (
-      <TodoItem
-        key={item.id}
-        handleChange={this.handleChange}
-        item={item}
-        deleteTodo={this.deleteTodo}
-      />
-    ));
+    const totalCompleted = todos.filter(item => item.completed !== true).length;
 
-    const tommorowItemsArray = todos.filter(
-      todo => isTomorrow(todo.start) === true
+    // Get total minutes to complete task
+    let totalTime = 0;
+    const totaltimeRequired = todos.forEach(
+      element => (totalTime += differenceInMinutes(element.end, element.start))
     );
-    const tommorowItems = tommorowItemsArray.map(item => (
-      <TodoItem
-        key={item.id}
-        handleChange={this.handleChange}
-        item={item}
-        deleteTodo={this.deleteTodo}
-      />
-    ));
+    // const notificationsToday = todos
+    //   .filter(
+    //     item =>
+    //       isToday(item.start) &&
+    //       differenceInHours(item.end, item.start) < 24
+    //   )
+    //   .map(item => (
+    //     <TodoItem
+    //       key={item.id}
+    //       handleChange={this.handleChange}
+    //       item={item}
+    //       deleteTodo={this.deleteTodo}
+    //     />
+    //   ));
 
-    const thisWeek = todos.filter(item => isThisWeek(item.start) === true);
-    const thisWeekItems = thisWeek.map(item => {
-      return (
+    const todayItems = todos
+      .filter(item => isToday(item.start) === true)
+      .map(item => (
         <TodoItem
           key={item.id}
           handleChange={this.handleChange}
           item={item}
           deleteTodo={this.deleteTodo}
         />
-      );
-    });
+      ));
+
+    const todayCompleted = todayItems.filter(todo => todo.completed !== false)
+      .length;
+
+    const tommorowItems = todos
+      .filter(item => isTomorrow(item.start) === true)
+      .map(item => (
+        <TodoItem
+          key={item.id}
+          handleChange={this.handleChange}
+          item={item}
+          deleteTodo={this.deleteTodo}
+        />
+      ));
+
+    const thisWeekItems = todos
+      .filter(item => isThisWeek(item.start) === true)
+      .map(item => {
+        return (
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const AllPanel = () => (
+      <div>
+        <H3>All Todos</H3>
+
+        <p>You have {todoItems.length} todos in total</p>
+        <p>Time required {totalTime} minutes</p>
+        <p>
+          {totalCompleted} of {todoItems.length} completed
+        </p>
+        <p className={Classes.RUNNING_TEXT}>{todoItems}</p>
+      </div>
+    );
 
     const TodayPanel = () => (
       <div>
         <H3>Today</H3>
+        <p>You have {todayItems.length} todos today</p>
+        <p>
+          {todayCompleted} of {todayItems.length} completed
+        </p>
         <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
       </div>
     );
 
-    const AngularPanel = () => (
+    const TommorowPanel = () => (
       <div>
-        <H3>Example panel: Angular</H3>
+        <H3>Tommorow</H3>
+        <p>You have {tommorowItems.length} todos today</p>
+
         <p className={Classes.RUNNING_TEXT}>{tommorowItems}</p>
       </div>
     );
 
-    const EmberPanel = () => (
+    const SummaryPanel = () => (
       <div>
-        <H3>Example panel: Ember</H3>
-        <p className={Classes.RUNNING_TEXT}>
-          Ember.js is an open-source JavaScript application framework, based on
-          the model-view-controller (MVC) pattern. It allows developers to
-          create scalable single-page web applications by incorporating common
-          idioms and best practices into the framework. What is your favorite JS
-          framework?
-        </p>
-        <input className={Classes.INPUT} type="text" />
+        <Summary todos={todos} />
       </div>
     );
 
-    const BackbonePanel = () => (
+    const workTodosItem = todos
+      .filter(todo => todo.type === "work")
+      .map(item => {
+        return (
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const personalTodosItem = todos
+      .filter(item => item.type === "personal")
+      .map(item => {
+        return (
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const ThisWeekPanel = () => (
       <div>
-        <H3>Backbone</H3>
+        <H3>This Week Todos</H3>
+        <p className={Classes.RUNNING_TEXT}></p>
+        {thisWeekItems}
+      </div>
+    );
+
+    const WorkPanel = () => (
+      <div>
+        <H3>Work Todos</H3>
+        <p className={Classes.RUNNING_TEXT}>
+          You have {workTodosItem.length} work related todos
+        </p>
+        <div>{workTodosItem}</div>
+      </div>
+    );
+
+    const PersonalPanel = () => (
+      <div>
+        <H3>Personal Todos</H3>
+        <p className={Classes.RUNNING_TEXT}>
+          You have {personalTodosItem.length} personal todos
+        </p>
+        <div>{personalTodosItem}</div>
+      </div>
+    );
+
+    const UpcomingPanel = () => (
+      <div>
+        <H3>Upcoming</H3>
       </div>
     );
 
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md">
-            <Example
-              className="docs-tabs-example"
-              options={options}
-              {...this.props}
-            >
-              <Navbar>
-                <Navbar.Group>
-                  <Navbar.Heading>
-                    Current page: <strong>{this.state.navbarTabId}</strong>
-                  </Navbar.Heading>
-                </Navbar.Group>
-                <Navbar.Group align={Alignment.RIGHT}>
-                  {/* controlled mode & no panels (see h1 below): */}
-                  <Tabs
-                    animate={this.state.animate}
-                    id="navbar"
-                    large={true}
-                    onChange={this.handleNavbarTabChange}
-                    selectedTabId={this.state.navbarTabId}
-                  >
-                    <Tab className="bp-3" id="Home" title="Home" />
-                    <Tab id="Files" title="Files" />
-                    <Tab id="Builds" title="Builds" />
-                  </Tabs>
-                </Navbar.Group>
-              </Navbar>
-              {/* uncontrolled mode & each Tab has a panel: */}
-              <Tabs
-                animate={this.state.animate}
-                id="TabsExample"
-                key={this.state.vertical ? "vertical" : "horizontal"}
-                renderActiveTabPanelOnly={this.state.activePanelOnly}
-                vertical={this.state.vertical}
-              >
-                <Tab id="today" title="Today" panel={<TodayPanel />} />
-                <Tab id="tommorow" title="Tommorow" panel={<AngularPanel />} />
-                <Tab
-                  id="Next-7-days"
-                  title="Next 7 days"
-                  panel={<EmberPanel />}
-                  panelClassName="next7-panel"
-                />
-                <Tab id="Upcoming" title="Backbone" panel={<BackbonePanel />} />
-                <Tabs.Expander />
-
-                <InputGroup
-                  className={Classes.FILL}
-                  type="text"
-                  placeholder="Search Todos..."
-                />
-              </Tabs>
-            </Example>
-          </div>
-
-          <Divider />
-          <div className="col-lg">
-            <div className="d-flex">
-              <div className="todo">
+      <div className="container-fluid">
+        <Button onClick={this.showCalendar}>
+          {show === false ? "Show Calendar" : "Add a Todo or view list"}
+        </Button>
+        {show === false ? (
+          <div className="row">
+            <div className="col-md">
+              <Example className="docs-tabs-example" {...this.props}>
+                <Tabs
+                  animate={this.state.animate}
+                  id="TabsExample"
+                  key={this.state.vertical ? "vertical" : "horizontal"}
+                  renderActiveTabPanelOnly={this.state.activePanelOnly}
+                  vertical={this.state.vertical}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Tab id="all" title="All" panel={<AllPanel />} />
+                  <Tab id="today" title="Today" panel={<TodayPanel />} />
+                  <Tab
+                    id="tommorow"
+                    title="Tommorow"
+                    panel={<TommorowPanel />}
+                  />
+                  <Tab
+                    id="thisWeek"
+                    title="This Week"
+                    panel={<ThisWeekPanel />}
+                  />
+                  <Tab
+                    id="upcoming"
+                    title="Upcoming"
+                    panel={<UpcomingPanel />}
+                  />
+                  <Tab id="work" title="Work Todos" panel={<WorkPanel />} />
+                  <Tab
+                    id="personal"
+                    title="Personal Todos"
+                    panel={<PersonalPanel />}
+                  />
+                  <Tab
+                    id="search"
+                    title="Search"
+                    panel={<SummaryPanel />}
+                    panelClassName="next7-panel"
+                  />
+                  <Tabs.Expander />
+                </Tabs>
+              </Example>
+            </div>
+            <Divider />
+            <div className="col-lg">
+              <div class="d-flex justify-content-around">
                 <Alert alert={alert} />
                 <AddTodo addTodo={this.addTodo} setAlert={this.setAlert} />
               </div>
-              <div>
-                <h5 className="text-center">SUMMARY</h5>
-                <Summary todos={todos} />
+              <div className="row text-center p-2">
+                <Callout
+                  title={format(new Date(), "'Today is' MM/dd/yyyy iiii")}
+                >
+                  <Clock format={"HH:mm:ss"} ticking={true} />
+                </Callout>
+              </div>
+              <div className="card p-2 mb-1">
+                <label>Total Progress towards less work</label>
+                <ProgressBar
+                  animate={false}
+                  stripes={false}
+                  value={1 / todoItems.length}
+                />
+              </div>
+              <div className="card">
+                <H3 className="text-center p-1">Notifications</H3>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div style={{ height: 650, padding: "20px" }}>
+            <Calendar
+              // selectable
+              localizer={localizer}
+              events={this.state.todos}
+              showMultiDayTimes
+              step={60}
+              popup={true}
+              // onSelectEvent={this.showEvent} // Shows todo details
+              // onSelectSlot={this.handleSelect}
+              views={["month", "week", "day", "agenda"]}
+            />
+          </div>
+        )}
       </div>
     );
   }
 }
 
 export default MainContent;
-
-// <div>
-// <div>{this.state.today && todayItems}</div>
-// </div>
-// <div>
-// <div>{this.state.tommorow && tommorowItems}</div>
-// </div>
-// <div>
-// <div>{this.state.all && todoItems}</div>
-// </div>
-// <div>
-// <div>{this.state.thisWeek && thisWeekItems}</div>
-// </div>
-
-// <span
-// style={{ color: "Red", fontWeight: "bold", padding: "5px" }}
-// >
-// Upcoming
-// </span>
-// <span>{`${totalPendingTodos} of ${totalTodos} left`}</span>
-
-// <ButtonGroup minimal={true} className="text-left">
-// <Button
-//   icon="timeline-events"
-//   text="Today"
-//   onClick={this.todayTodos.bind(this)}
-// />
-// <Button
-//   icon="timeline-events"
-//   text="Tommorow"
-//   onClick={this.tommorowTodos.bind(this)}
-// />
-// <Button
-//   icon="timeline-events"
-//   text="All"
-//   onClick={this.allTodos.bind(this)}
-// />
-// <Button
-//   icon="timeline-events"
-//   text="This Week"
-//   onClick={this.thisWeekTodos.bind(this)}
-// />
-// </ButtonGroup>
+// {notificationsToday.length > 0 ? (
+//   { notificationsToday }
+// ) : (
+//   <p>No todos in the next 24 hours</p>
+// )}

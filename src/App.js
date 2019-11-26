@@ -14,7 +14,7 @@ class App extends React.Component {
           <Header />
           <Switch>
             <Route exact path="/" component={MainContent} />
-            <Route exact path="/calendar" component={CalendarUI} />
+            <Route exact path="/calendar" component={CalendarUI} />} />
           </Switch>
         </Router>
       </div>
