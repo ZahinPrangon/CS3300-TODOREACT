@@ -43,6 +43,7 @@ class MainContent extends React.Component {
       today: false,
       tommorow: false,
       thisWeek: false,
+      filtered: [],
       show: false,
       search: "",
       activePanelOnly: false,
@@ -160,7 +161,7 @@ class MainContent extends React.Component {
     moment.locale("en-GB");
     const localizer = momentLocalizer(moment);
     // Destructuring the state
-    const { todos, alert, show } = this.state;
+    const { todos, show } = this.state;
 
     // const totalPendingTodos = todos.filter(todo => !todo.completed).length;
     const todoItems = todos.map(item => (
@@ -176,9 +177,9 @@ class MainContent extends React.Component {
 
     // Get total minutes to complete task
     let totalTime = 0;
-    const totaltimeRequired = todos.forEach(
-      element => (totalTime += differenceInMinutes(element.end, element.start))
-    );
+    // const totaltimeRequired = todos.forEach(
+    //   element => (totalTime += differenceInMinutes(element.end, element.start))
+    // );
 
     const todayItems = todos
       .filter(item => isToday(item.start) === true)
@@ -218,6 +219,19 @@ class MainContent extends React.Component {
         );
       });
 
+    // Time required for this week's
+    // TODO - need to fix
+    const totaltimeRequired = todos
+      .filter(
+        element =>
+          isThisWeek(element.start) === true && element.completed === false
+      )
+      .forEach(
+        element =>
+          (totalTime += differenceInMinutes(element.end, element.start))
+      );
+    console.log(totaltimeRequired);
+
     const AllPanel = () => (
       <div>
         <H3>All Todos</H3>
@@ -252,7 +266,7 @@ class MainContent extends React.Component {
     );
 
     const urgentItems = todos
-      .filter(item => item.urgentLevel === "five" && isToday(item.start))
+      .filter(item => item.urgentLevel === "five" || isToday(item.start))
       .map(item => {
         return (
           <TodoItem
@@ -267,7 +281,7 @@ class MainContent extends React.Component {
     const UrgentPanel = () => (
       <div>
         <H3>URGENT</H3>
-        <h5>Todos with most urgent level and due today</h5>
+        <h5>Todos with most urgent level or due today</h5>
         {urgentItems}
       </div>
     );
@@ -333,6 +347,11 @@ class MainContent extends React.Component {
       </div>
     );
 
+    const SearchPanel = () => (
+      <div>
+        <H3>Search</H3>
+      </div>
+    );
     return (
       <div>
         <Header
@@ -409,30 +428,3 @@ class MainContent extends React.Component {
 }
 
 export default MainContent;
-
-// <ButtonGroup>
-// <Button onClick={this.onUrgentOne} className="border rounded mr-1">
-//   Urgent Level 1
-// </Button>
-// <Button className="border rounded mr-1">Urgent Level 2</Button>
-// <Button className="border rounded mr-1">Urgent Level 3</Button>
-// <Button className="border rounded mr-1">Urgent Level 4</Button>
-// <Button className="border rounded mr-1">Urgent Level 5</Button>
-// </ButtonGroup>
-// <div className="col-lg">
-//                 <div class="d-flex justify-content-around"></div>
-//                 <div className="row text-center p-2">
-
-//                 </div>
-//                 <div className="card p-2 mb-1">
-//                   <label>Total Progress towards less work</label>
-//                   <ProgressBar
-//                     animate={false}
-//                     stripes={false}
-//                     value={1 / todoItems.length}
-//                   />
-//                 </div>
-//                 <div className="card  mt-3">
-//                   <H3 className="text-center p-2">Summary</H3>
-//                 </div>
-//               </div>

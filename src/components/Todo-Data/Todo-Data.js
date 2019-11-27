@@ -43,6 +43,15 @@ const todosData = [
     end: new Date("December 5 2019 11:00:00"),
     type: "personal",
     urgentLevel: "five"
+  },
+  {
+    id: 6,
+    title: "Exam ends",
+    completed: false,
+    start: new Date("December 10 2019 09:00:00"),
+    end: new Date("December 11 2019 11:00:00"),
+    type: "personal",
+    urgentLevel: "five"
   }
 ];
 

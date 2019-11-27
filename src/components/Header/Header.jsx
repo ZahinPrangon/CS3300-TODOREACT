@@ -5,7 +5,7 @@ import Alert from "../Alert/Alert";
 
 import { format } from "date-fns";
 import Clock from "react-live-clock";
-import { Button } from "@blueprintjs/core";
+import { Button, Popover, Classes } from "@blueprintjs/core";
 
 function Header(props) {
   return (
@@ -17,13 +17,20 @@ function Header(props) {
         <div className="bp3-navbar-group bp3-align-left">
           <span
             className="bp3-navbar-heading"
-            style={{ textDecoration: "none" }}
+            style={{ textDecoration: "none", fontWeight: "900" }}
           >
             TODO LIST
           </span>
-          <span className="" style={{ textDecoration: "none" }}>
+          <span
+            className=""
+            style={{ textDecoration: "none", paddingLeft: "5px" }}
+          >
             {format(new Date(), "'Today is' MM/dd/yyyy iiii")}
-            <Clock format={"HH:mm:ss"} ticking={true} />
+            <Clock
+              style={{ paddingLeft: "5px" }}
+              format={"HH:mm:ss"}
+              ticking={true}
+            />
           </span>
         </div>
         <div className="bp3-navbar-group bp3-align-right">
