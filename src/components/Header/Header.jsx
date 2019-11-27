@@ -2,6 +2,7 @@ import React from "react";
 
 import AddTodo from "../Add-Todo/Add-Todo";
 import Alert from "../Alert/Alert";
+import Dropdown from "../Dropdown/Dropdown";
 
 import { format } from "date-fns";
 import Clock from "react-live-clock";
@@ -47,6 +48,7 @@ function Header(props) {
           ></Button>
           <Alert alert={alert} />
           <AddTodo addTodo={props.addTodo} setAlert={props.setAlert} />
+          <Dropdown todos={props.todos} />
         </div>
       </div>
     </nav>

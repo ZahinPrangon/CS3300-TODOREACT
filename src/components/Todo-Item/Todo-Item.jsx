@@ -18,7 +18,8 @@ function TodoItem(props) {
   };
 
   const cardStyle = {
-    backgroundColor: ""
+    backgroundColor: "",
+    marginBottom: "5px"
   };
   const ms = moment(props.item.end, "DD/MM/YYYY HH:mm:ss").diff(
     moment(props.item.start, "DD/MM/YYYY HH:mm:ss")
@@ -27,7 +28,7 @@ function TodoItem(props) {
   const s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
 
   return (
-    <Card className="mb-1" interactive style={cardStyle}>
+    <Card interactive style={cardStyle}>
       <div style={props.item.completed ? completedStyle : null}>
         <Checkbox
           large
