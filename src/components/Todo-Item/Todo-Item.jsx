@@ -1,5 +1,6 @@
 import React from "react";
 import Moment from "react-moment";
+import moment from "moment";
 import { H2, Divider, Checkbox, Button, Card, Tag } from "@blueprintjs/core";
 
 function TodoItem(props) {
@@ -16,8 +17,17 @@ function TodoItem(props) {
     cursor: "pointer"
   };
 
+  const cardStyle = {
+    backgroundColor: ""
+  };
+  const ms = moment(props.item.end, "DD/MM/YYYY HH:mm:ss").diff(
+    moment(props.item.start, "DD/MM/YYYY HH:mm:ss")
+  );
+  const d = moment.duration(ms);
+  const s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+
   return (
-    <Card className="mb-1" h-50 interactive>
+    <Card className="mb-1" interactive style={cardStyle}>
       <div style={props.item.completed ? completedStyle : null}>
         <Checkbox
           large
@@ -44,7 +54,7 @@ function TodoItem(props) {
             {props.item.end}
           </Moment>
           <Moment format="MMMM Do YYYY dddd">{props.item.end}</Moment>
-
+          <p className="text-muted">Time required: {s}</p>
           <Divider />
         </div>
         <p className="text-center">

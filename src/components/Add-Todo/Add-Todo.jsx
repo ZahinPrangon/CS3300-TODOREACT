@@ -2,21 +2,21 @@ import React from "react";
 import DateTimePicker from "react-datetime-picker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
-  AnchorButton,
+  // AnchorButton,
   Button,
   Classes,
-  Code,
-  Dialog,
-  H5,
-  Intent,
-  Switch,
-  Tooltip
+  // Code,
+  Dialog
+  // H5,
+  // Intent,
+  // Switch,
+  // Tooltip
 } from "@blueprintjs/core";
-import {
-  Example,
-  handleBooleanChange,
-  IExampleProps
-} from "@blueprintjs/docs-theme";
+// import {
+//   Example,
+//   handleBooleanChange,
+//   IExampleProps
+// } from "@blueprintjs/docs-theme";
 import {
   NotificationContainer,
   NotificationManager
@@ -94,12 +94,10 @@ class AddTodo extends React.Component {
       <div>
         <div {...this.props}>
           <Button
-            icon="add"
-            className="bp3-intent-primary"
+            className="bp3-button bp3-minimal bp3-icon-add"
             onClick={this.handleOpen}
-          >
-            Add New Todo
-          </Button>
+          />
+
           <Dialog onClose={this.handleClose} {...this.state}>
             <div className={Classes.DIALOG_BODY}>
               <form
@@ -120,6 +118,7 @@ class AddTodo extends React.Component {
                 <label>Start Date</label>
 
                 <DateTimePicker
+                  minDate={new Date()}
                   className="form-control"
                   onChange={this.onChangeStartDate}
                   value={this.state.startDate}
@@ -129,11 +128,11 @@ class AddTodo extends React.Component {
                 <label>End Date</label>
 
                 <DateTimePicker
+                  minDate={new Date()}
                   className="form-control"
                   onChange={this.onChangeEndDate}
                   value={this.state.endDate}
                   style={{ marginBottom: "5px" }}
-                  calendarAriaLabel="close"
                 />
                 <label>Enter the level of urgent for this todo</label>
                 <select

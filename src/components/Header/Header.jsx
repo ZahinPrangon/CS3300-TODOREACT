@@ -1,29 +1,45 @@
 import React from "react";
-import { Link } from "react-router-dom";
+
+import AddTodo from "../Add-Todo/Add-Todo";
+import Alert from "../Alert/Alert";
+
+import { format } from "date-fns";
+import Clock from "react-live-clock";
 import { Button } from "@blueprintjs/core";
 
-function Header() {
+function Header(props) {
   return (
-    <nav className="bp3-navbar bp3-dark mb-2">
+    <nav
+      className="bp3-navbar bp3-dark mb-2"
+      style={{ position: "fixed", top: "0" }}
+    >
       <div style={{ margin: "0 auto" }}>
         <div className="bp3-navbar-group bp3-align-left">
-          <Link
-            to="/"
+          <span
             className="bp3-navbar-heading"
             style={{ textDecoration: "none" }}
           >
             TODO LIST
-          </Link>
+          </span>
+          <span className="" style={{ textDecoration: "none" }}>
+            {format(new Date(), "'Today is' MM/dd/yyyy iiii")}
+            <Clock format={"HH:mm:ss"} ticking={true} />
+          </span>
         </div>
         <div className="bp3-navbar-group bp3-align-right">
-          <Link to="/" className="bp3-button bp3-minimal bp3-icon-home">
+          <Button
+            onClick={props.onChangeHome}
+            className="bp3-button bp3-minimal bp3-icon-home"
+          >
             Home
-          </Link>
+          </Button>
           <span className="bp3-navbar-divider"></span>
           <Button
+            onClick={props.onChangeView}
             className="bp3-button bp3-minimal bp3-icon-calendar"
-            to="/calendar"
           ></Button>
+          <Alert alert={alert} />
+          <AddTodo addTodo={props.addTodo} setAlert={props.setAlert} />
         </div>
       </div>
     </nav>

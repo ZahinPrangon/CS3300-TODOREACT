@@ -1,15 +1,18 @@
 import React from "react";
 import TodoItem from "../Todo-Item/Todo-Item";
 import todosData from "../Todo-Data/Todo-Data";
-import AddTodo from "../Add-Todo/Add-Todo";
-import Alert from "../Alert/Alert";
+// import AddTodo from "../Add-Todo/Add-Todo";
+// import Alert from "../Alert/Alert";
 import "./Main-Content.styles.css";
 import { Summary } from "../Summary/Summary";
+import Header from "../Header/Header";
+
 import {
-  format,
+  // format,
   isToday,
   isTomorrow,
   isThisWeek,
+  // differenceInHours,
   differenceInMinutes
 } from "date-fns";
 
@@ -18,13 +21,12 @@ import {
   H3,
   Tab,
   Tabs,
-  Divider,
-  Callout,
-  ProgressBar,
-  Button,
-  Overlay
+  Divider
+  // Callout,
+  // ProgressBar,
+  // Button,
+  // ButtonGroup
 } from "@blueprintjs/core";
-import Clock from "react-live-clock";
 import { Example, handleBooleanChange } from "@blueprintjs/docs-theme";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
@@ -43,7 +45,6 @@ class MainContent extends React.Component {
       thisWeek: false,
       show: false,
       search: "",
-
       activePanelOnly: false,
       animate: true,
       navbarTabId: "Today",
@@ -145,19 +146,14 @@ class MainContent extends React.Component {
     this.setState({ all: !all });
   };
 
-  handleNavbarTabChange = (navbarTabId: TabId) =>
-    this.setState({ navbarTabId });
+  handleNavbarTabChange = navbarTabId => this.setState({ navbarTabId });
 
-  handleSearchChange = e => {
-    console.log(e.target.value);
-    this.setState({
-      search: e.target.value
-    });
-  };
   showCalendar = () => {
-    const { show } = this.state;
-    this.setState({ show: !show });
-    console.log(this.state.show);
+    this.setState({ show: true });
+  };
+
+  showHome = () => {
+    this.setState({ show: false });
   };
 
   render() {
@@ -183,20 +179,6 @@ class MainContent extends React.Component {
     const totaltimeRequired = todos.forEach(
       element => (totalTime += differenceInMinutes(element.end, element.start))
     );
-    // const notificationsToday = todos
-    //   .filter(
-    //     item =>
-    //       isToday(item.start) &&
-    //       differenceInHours(item.end, item.start) < 24
-    //   )
-    //   .map(item => (
-    //     <TodoItem
-    //       key={item.id}
-    //       handleChange={this.handleChange}
-    //       item={item}
-    //       deleteTodo={this.deleteTodo}
-    //     />
-    //   ));
 
     const todayItems = todos
       .filter(item => isToday(item.start) === true)
@@ -269,9 +251,24 @@ class MainContent extends React.Component {
       </div>
     );
 
-    const SummaryPanel = () => (
+    const urgentItems = todos
+      .filter(item => item.urgentLevel === "five" && isToday(item.start))
+      .map(item => {
+        return (
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const UrgentPanel = () => (
       <div>
-        <Summary todos={todos} />
+        <H3>URGENT</H3>
+        <h5>Todos with most urgent level and due today</h5>
+        {urgentItems}
       </div>
     );
 
@@ -329,111 +326,113 @@ class MainContent extends React.Component {
       </div>
     );
 
-    const UpcomingPanel = () => (
+    const SummaryPanel = () => (
       <div>
-        <H3>Upcoming</H3>
+        <H3>SUMMARY</H3>
+        <Summary todos={todos} />
       </div>
     );
 
     return (
-      <div className="container-fluid">
-        <Button onClick={this.showCalendar}>
-          {show === false ? "Show Calendar" : "Add a Todo or view list"}
-        </Button>
-        {show === false ? (
-          <div className="row">
-            <div className="col-md">
-              <Example className="docs-tabs-example" {...this.props}>
-                <Tabs
-                  animate={this.state.animate}
-                  id="TabsExample"
-                  key={this.state.vertical ? "vertical" : "horizontal"}
-                  renderActiveTabPanelOnly={this.state.activePanelOnly}
-                  vertical={this.state.vertical}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Tab id="all" title="All" panel={<AllPanel />} />
-                  <Tab id="today" title="Today" panel={<TodayPanel />} />
-                  <Tab
-                    id="tommorow"
-                    title="Tommorow"
-                    panel={<TommorowPanel />}
-                  />
-                  <Tab
-                    id="thisWeek"
-                    title="This Week"
-                    panel={<ThisWeekPanel />}
-                  />
-                  <Tab
-                    id="upcoming"
-                    title="Upcoming"
-                    panel={<UpcomingPanel />}
-                  />
-                  <Tab id="work" title="Work Todos" panel={<WorkPanel />} />
-                  <Tab
-                    id="personal"
-                    title="Personal Todos"
-                    panel={<PersonalPanel />}
-                  />
-                  <Tab
-                    id="search"
-                    title="Search"
-                    panel={<SummaryPanel />}
-                    panelClassName="next7-panel"
-                  />
-                  <Tabs.Expander />
-                </Tabs>
-              </Example>
-            </div>
-            <Divider />
-            <div className="col-lg">
-              <div class="d-flex justify-content-around">
-                <Alert alert={alert} />
-                <AddTodo addTodo={this.addTodo} setAlert={this.setAlert} />
-              </div>
-              <div className="row text-center p-2">
-                <Callout
-                  title={format(new Date(), "'Today is' MM/dd/yyyy iiii")}
-                >
-                  <Clock format={"HH:mm:ss"} ticking={true} />
-                </Callout>
-              </div>
-              <div className="card p-2 mb-1">
-                <label>Total Progress towards less work</label>
-                <ProgressBar
-                  animate={false}
-                  stripes={false}
-                  value={1 / todoItems.length}
-                />
-              </div>
-              <div className="card">
-                <H3 className="text-center p-1">Notifications</H3>
+      <div>
+        <Header
+          onChangeView={this.showCalendar}
+          onChangeHome={this.showHome}
+          alert={this.alert}
+          addTodo={this.addTodo}
+          setAlert={this.setAlert}
+        />
+
+        <div className="container-fluid pt-5">
+          {show === false ? (
+            <div className="row">
+              <Divider />
+              <div className="col-md pt-2">
+                <Example className="docs-tabs-example" {...this.props}>
+                  <Tabs
+                    animate={this.state.animate}
+                    id="TabsExample"
+                    key={this.state.vertical ? "vertical" : "horizontal"}
+                    renderActiveTabPanelOnly={this.state.activePanelOnly}
+                    vertical={this.state.vertical}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Tab id="all" title="All" panel={<AllPanel />} />
+                    <Tab id="today" title="Today" panel={<TodayPanel />} />
+                    <Tab
+                      id="tommorow"
+                      title="Tommorow"
+                      panel={<TommorowPanel />}
+                    />
+                    <Tab
+                      id="thisWeek"
+                      title="This Week"
+                      panel={<ThisWeekPanel />}
+                    />
+                    <Tab
+                      id="Summary"
+                      title="Summary"
+                      panel={<SummaryPanel />}
+                    />
+                    <Tab id="work" title="Work Todos" panel={<WorkPanel />} />
+                    <Tab
+                      id="personal"
+                      title="Personal Todos"
+                      panel={<PersonalPanel />}
+                    />
+                    <Tab id="Urgent" title="Urgent" panel={<UrgentPanel />} />
+                    <Tabs.Expander />
+                  </Tabs>
+                </Example>
               </div>
             </div>
-          </div>
-        ) : (
-          <div style={{ height: 650, padding: "20px" }}>
-            <Calendar
-              // selectable
-              localizer={localizer}
-              events={this.state.todos}
-              showMultiDayTimes
-              step={60}
-              popup={true}
-              // onSelectEvent={this.showEvent} // Shows todo details
-              // onSelectSlot={this.handleSelect}
-              views={["month", "week", "day", "agenda"]}
-            />
-          </div>
-        )}
+          ) : (
+            <div style={{ height: 650, padding: "20px" }}>
+              <Calendar
+                // selectable
+                localizer={localizer}
+                events={this.state.todos}
+                showMultiDayTimes
+                step={60}
+                popup={true}
+                popupOffset={30}
+                // onSelectEvent={this.showEvent} // Shows todo details
+                // onSelectSlot={this.handleSelect}
+                views={["month", "week", "day", "agenda"]}
+              />
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 }
 
 export default MainContent;
-// {notificationsToday.length > 0 ? (
-//   { notificationsToday }
-// ) : (
-//   <p>No todos in the next 24 hours</p>
-// )}
+
+// <ButtonGroup>
+// <Button onClick={this.onUrgentOne} className="border rounded mr-1">
+//   Urgent Level 1
+// </Button>
+// <Button className="border rounded mr-1">Urgent Level 2</Button>
+// <Button className="border rounded mr-1">Urgent Level 3</Button>
+// <Button className="border rounded mr-1">Urgent Level 4</Button>
+// <Button className="border rounded mr-1">Urgent Level 5</Button>
+// </ButtonGroup>
+// <div className="col-lg">
+//                 <div class="d-flex justify-content-around"></div>
+//                 <div className="row text-center p-2">
+
+//                 </div>
+//                 <div className="card p-2 mb-1">
+//                   <label>Total Progress towards less work</label>
+//                   <ProgressBar
+//                     animate={false}
+//                     stripes={false}
+//                     value={1 / todoItems.length}
+//                   />
+//                 </div>
+//                 <div className="card  mt-3">
+//                   <H3 className="text-center p-2">Summary</H3>
+//                 </div>
+//               </div>
