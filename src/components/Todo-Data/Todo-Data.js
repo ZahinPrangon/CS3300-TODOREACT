@@ -20,8 +20,8 @@ const todosData = [
   {
     id: 3,
     title: "Finish CS3401",
-    start: new Date("November 26 2019 04:24:00"),
-    end: new Date("November 26 2019 05:24:00"),
+    start: new Date("November 28 2019 04:24:00"),
+    end: new Date("November 29 2019 05:24:00"),
     completed: false,
     type: "work",
     rating: 5

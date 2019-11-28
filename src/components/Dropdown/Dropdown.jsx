@@ -3,7 +3,6 @@ import React from "react";
 import {
   Button,
   Menu,
-  MenuDivider,
   MenuItem,
   Popover,
   Position,
@@ -29,10 +28,18 @@ export default class DropdownMenuExample extends React.Component {
         );
       });
     const exampleMenu = <Menu>{todoItems}</Menu>;
+    const nothingMenu = (
+      <Menu>
+        <MenuItem className="text-bold" text="Nothing To Show" />
+      </Menu>
+    );
     return (
       <Example options={false} {...this.props}>
         <span class="button__badge">{this.props.todos.length}</span>
-        <Popover content={exampleMenu} position={Position.BOTTOM_LEFT}>
+        <Popover
+          content={this.props.todos.length > 0 ? exampleMenu : nothingMenu}
+          position={Position.BOTTOM_LEFT}
+        >
           <Button minimal icon="notifications" />
         </Popover>
       </Example>

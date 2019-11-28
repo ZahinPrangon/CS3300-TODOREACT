@@ -13,7 +13,9 @@ import {
   isThisWeek,
   // differenceInHours,
   compareAsc,
-  differenceInMinutes
+  differenceInMinutes,
+  isThisYear,
+  format
 } from "date-fns";
 
 import {
@@ -32,6 +34,7 @@ import { Example, handleBooleanChange } from "@blueprintjs/docs-theme";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import AddTodo from "../Add-Todo/Add-Todo";
 
 class MainContent extends React.Component {
   constructor(props) {
@@ -244,34 +247,69 @@ class MainContent extends React.Component {
 
     const AllPanel = () => (
       <div>
-        <H3>All Todos</H3>
-
-        <p>You have {todoItems.length} todos in total</p>
-        <p>Time required {totalTime} minutes</p>
-        <p>
-          {totalCompleted} of {todoItems.length} needs to be completed
-        </p>
-        <p className={Classes.RUNNING_TEXT}>{todoItems}</p>
+        {todoItems.length > 0 ? (
+          <div>
+            <H3>All Todos</H3>
+            <p>You have {todoItems.length} todos in total</p>
+            <p>Time required {totalTime} minutes</p>
+            <p>
+              {totalCompleted} of {todoItems.length} needs to be completed
+            </p>
+            <p className={Classes.RUNNING_TEXT}>{todoItems}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>All Todos</H3>
+            <p>Nothing to do for now</p>
+          </div>
+        )}
       </div>
     );
 
+    // TODO: ADD Nothing to show for all
     const TodayPanel = () => (
       <div>
-        <H3>Today</H3>
-        <p>You have {todayItems.length} todos today</p>
-        <p>
-          {todayCompleted} of {todayItems.length} needs to be completed
-        </p>
-        <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
+        {todayItems.length > 0 ? (
+          <div>
+            <H3>Today's Todos</H3>
+            <p>You have {todayItems.length} todos today</p>
+            <p>Time required {totalTime} minutes</p>
+            <p>
+              {todayCompleted} of {todayItems.length} needs to be completed
+            </p>
+            <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>Today's Todos</H3>
+            <p>Nothing for today</p>
+          </div>
+        )}
       </div>
     );
+
+    const tommorowCompleted = tommorowItems.filter(
+      item => item.completed === false
+    ).length;
 
     const TommorowPanel = () => (
       <div>
-        <H3>Tommorow</H3>
-        <p>You have {tommorowItems.length} todos today</p>
-
-        <p className={Classes.RUNNING_TEXT}>{tommorowItems}</p>
+        {tommorowItems.length > 0 ? (
+          <div>
+            <H3>Tommorow's Todos</H3>
+            <p>You have {tommorowItems.length} todos today</p>
+            <p>
+              {tommorowCompleted} of {tommorowItems.length} needs to be
+              completed
+            </p>
+            <p className={Classes.RUNNING_TEXT}>{tommorowItems}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>Tommorow's Todos</H3>
+            <p className="font-weight-bold">Nothing for tommorow</p>
+          </div>
+        )}
       </div>
     );
 
@@ -291,9 +329,18 @@ class MainContent extends React.Component {
 
     const UrgentPanel = () => (
       <div>
-        <H3>URGENT</H3>
-        <h5>Todos with most urgent level or due today</h5>
-        {urgentItems}
+        {urgentItems.length > 0 ? (
+          <div>
+            <H3>URGENT</H3>
+            <h6>Todos with most urgent level or due today</h6>
+            {urgentItems}
+          </div>
+        ) : (
+          <div>
+            <H3>URGENT</H3>
+            <p>Nothing to show</p>
+          </div>
+        )}
       </div>
     );
 
@@ -327,29 +374,49 @@ class MainContent extends React.Component {
 
     const ThisWeekPanel = () => (
       <div>
-        <H3>This Week Todos</H3>
-        <p className={Classes.RUNNING_TEXT}></p>
-        {thisWeekItems}
+        {thisWeekItems.length > 0 ? (
+          <div>
+            <H3>This Week Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>{thisWeekItems}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>This Week Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+          </div>
+        )}
       </div>
     );
 
     const WorkPanel = () => (
       <div>
-        <H3>Work Todos</H3>
-        <p className={Classes.RUNNING_TEXT}>
-          You have {workTodosItem.length} work related todos
-        </p>
-        <div>{workTodosItem}</div>
+        {workTodosItem.length > 0 ? (
+          <div>
+            <H3>Work Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>{workTodosItem}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>Work Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+          </div>
+        )}
       </div>
     );
 
     const PersonalPanel = () => (
       <div>
-        <H3>Personal Todos</H3>
-        <p className={Classes.RUNNING_TEXT}>
-          You have {personalTodosItem.length} personal todos
-        </p>
-        <div>{personalTodosItem}</div>
+        {personalTodosItem.length > 0 ? (
+          <div>
+            <H3>Personal Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>{personalTodosItem}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>Personal Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+          </div>
+        )}
       </div>
     );
 
@@ -360,12 +427,31 @@ class MainContent extends React.Component {
       </div>
     );
 
+    const upcomingTodos = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      .filter(item => isThisWeek(item.start) === false)
+      .map(item => (
+        <div className="text-center">
+          <H3 key={item.id}>{format(item.start, "PPPP")}</H3>
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        </div>
+      ));
+
     const UpcomingPanel = () => (
       <div>
-        <H3>Upcoming</H3>
-        {
-          // <Dropdown todos={todos} />
-        }{" "}
+        <h4>Upcoming</h4>
+        {upcomingTodos.length > 0 ? (
+          <p>{upcomingTodos}</p>
+        ) : (
+          <p className="font-weight-bold">
+            Nothing to do in the upcoming future
+          </p>
+        )}
       </div>
     );
 

@@ -1,12 +1,15 @@
 import React from "react";
-import DateTimePicker from "react-datetime-picker";
+// import DateTimePicker from "react-datetime-picker";
+import Datetime from "react-datetime";
 import "react-datepicker/dist/react-datepicker.css";
-import { Button, Classes, Switch, Dialog } from "@blueprintjs/core";
+import { Button, Classes, Dialog } from "@blueprintjs/core";
 import StarRatingComponent from "react-star-rating-component";
 import {
   NotificationContainer,
   NotificationManager
 } from "react-notifications";
+
+import "./Add-Todo.styles.css";
 
 class AddTodo extends React.Component {
   // Component state to get the title from the input
@@ -82,6 +85,10 @@ class AddTodo extends React.Component {
   render() {
     // const today = new Date();
     const { title, startDate, endDate, type, rating } = this.state;
+    var yesterday = Datetime.moment().subtract(1, "day");
+    var valid = function(current) {
+      return current.isAfter(yesterday);
+    };
     return (
       <div>
         <div {...this.props}>
@@ -103,28 +110,27 @@ class AddTodo extends React.Component {
                   type="text"
                   name="title"
                   placeholder="Add Todo..."
-                  style={{ flex: "10", marginBottom: "5px" }}
                   value={title}
                   onChange={this.onChange}
                 />
-                <label>Start Date</label>
 
-                <DateTimePicker
-                  // disabledDays={{ before: today }}
-                  minDate={new Date()}
-                  className="form-control"
+                <label>Start Date</label>
+                <Datetime
+                  // minDate={new Date()}
                   onChange={this.onChangeStartDate}
                   value={startDate}
-                  style={{ marginBottom: "5px" }}
+                  isValidDate={valid}
+                  // style={{ marginBottom: "5px" }}
                 />
                 <label>End Date</label>
-                <DateTimePicker
-                  minDate={new Date()}
-                  className="form-control"
+                <Datetime
+                  // minDate={new Date()}
                   onChange={this.onChangeEndDate}
                   value={endDate}
-                  style={{ marginBottom: "5px" }}
+                  isValidDate={valid}
+                  // style={{ marginBottom: "5px" }}
                 />
+
                 <label className="pt-1 mr-1">Add an importance level</label>
                 <div
                   style={{
