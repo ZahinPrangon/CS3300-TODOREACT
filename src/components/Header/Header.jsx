@@ -4,9 +4,9 @@ import AddTodo from "../Add-Todo/Add-Todo";
 import Alert from "../Alert/Alert";
 import Dropdown from "../Dropdown/Dropdown";
 
-import { format } from "date-fns";
-import Clock from "react-live-clock";
-import { Button, Popover, Classes } from "@blueprintjs/core";
+// import { format } from "date-fns";
+// import Clock from "react-live-clock";
+import { Button } from "@blueprintjs/core";
 
 function Header(props) {
   return (
@@ -18,36 +18,24 @@ function Header(props) {
         <div className="bp3-navbar-group bp3-align-left">
           <span
             className="bp3-navbar-heading"
-            style={{ textDecoration: "none", fontWeight: "900" }}
+            style={{
+              textDecoration: "none",
+              fontWeight: "900",
+              cursor: "pointer"
+            }}
+            onClick={props.onChangeHome}
           >
             TODO LIST
           </span>
-          <span
-            className=""
-            style={{ textDecoration: "none", paddingLeft: "5px" }}
-          >
-            {format(new Date(), "'Today is' MM/dd/yyyy iiii")}
-            <Clock
-              style={{ paddingLeft: "5px" }}
-              format={"HH:mm:ss"}
-              ticking={true}
-            />
-          </span>
         </div>
         <div className="bp3-navbar-group bp3-align-right">
-          <Button
-            onClick={props.onChangeHome}
-            className="bp3-button bp3-minimal bp3-icon-home"
-          >
-            Home
-          </Button>
           <span className="bp3-navbar-divider"></span>
+          <Alert alert={alert} />
+          <AddTodo addTodo={props.addTodo} setAlert={props.setAlert} />
           <Button
             onClick={props.onChangeView}
             className="bp3-button bp3-minimal bp3-icon-calendar"
           ></Button>
-          <Alert alert={alert} />
-          <AddTodo addTodo={props.addTodo} setAlert={props.setAlert} />
           <Dropdown todos={props.todos} />
         </div>
       </div>

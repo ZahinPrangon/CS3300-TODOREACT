@@ -1,7 +1,8 @@
 import React from "react";
 import Moment from "react-moment";
-import moment from "moment";
+import { differenceInMinutes } from "date-fns";
 import { H2, Divider, Checkbox, Button, Card, Tag } from "@blueprintjs/core";
+import StarRatingComponent from "react-star-rating-component";
 
 function TodoItem(props) {
   // Completed Styles
@@ -11,21 +12,19 @@ function TodoItem(props) {
     textDecoration: "line-through"
   };
 
-  // Button Styles
-  const btnStyle = {
-    width: "10%",
-    cursor: "pointer"
-  };
-
   const cardStyle = {
     backgroundColor: "",
-    marginBottom: "5px"
+    marginBottom: "15px",
+    width: "48%",
+    display: "inline-block",
+    marginRight: "15px",
+    justifyContent: "center"
   };
-  const ms = moment(props.item.end, "DD/MM/YYYY HH:mm:ss").diff(
-    moment(props.item.start, "DD/MM/YYYY HH:mm:ss")
-  );
-  const d = moment.duration(ms);
-  const s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+
+  let hours = differenceInMinutes(props.item.end, props.item.start) / 60;
+  let rhours = Math.floor(hours);
+  let minutes = (hours - rhours) * 60;
+  let rminutes = Math.round(minutes);
 
   return (
     <Card interactive style={cardStyle}>
@@ -37,10 +36,12 @@ function TodoItem(props) {
           checked={props.item.completed}
           onChange={() => props.handleChange(props.item.id)}
         />
-        <Tag large className="text-right">
-          {props.item.type}
-        </Tag>
         <H2 className="text-center">{props.item.title}</H2>
+        <span>
+          <Tag large round active>
+            {props.item.type}
+          </Tag>
+        </span>
         <div className="text-center">
           <div>
             <span className="mr-1">From</span>
@@ -55,21 +56,27 @@ function TodoItem(props) {
             {props.item.end}
           </Moment>
           <Moment format="MMMM Do YYYY dddd">{props.item.end}</Moment>
-          <p className="text-muted">Time required: {s}</p>
+          <p className="text-muted">
+            Time required: {rhours} <b>hr</b> {rminutes} <b>min</b>
+          </p>
           <Divider />
+          <StarRatingComponent
+            name="Importance Level"
+            className="text-center"
+            editing={false}
+            value={props.item.rating}
+          />
         </div>
-        <p className="text-center">
-          Importance Level: {props.item.urgentLevel}
-        </p>
       </div>
       <div
         style={{ display: "flex", justifyContent: "center", padding: "5px" }}
       >
         <Button
           large
-          style={btnStyle}
+          minimal
+          // style={btnStyle}
           type="button"
-          className="btn btn-primary"
+          className="bp3-intent-warning"
           icon="trash"
           onClick={props.deleteTodo.bind(this, props.item.id)}
         ></Button>
@@ -79,3 +86,7 @@ function TodoItem(props) {
 }
 
 export default TodoItem;
+
+// {        <p className="text-center text-bold">
+//           Importance Level: {props.item.urgentLevel.toUpperCase()}
+//         </p>}

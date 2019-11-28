@@ -7,7 +7,9 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <MainContent />
+        <div>
+          <MainContent />
+        </div>
       </div>
     );
   }

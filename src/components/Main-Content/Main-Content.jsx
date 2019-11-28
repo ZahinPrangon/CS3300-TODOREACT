@@ -1,8 +1,7 @@
 import React from "react";
 import TodoItem from "../Todo-Item/Todo-Item";
 import todosData from "../Todo-Data/Todo-Data";
-// import AddTodo from "../Add-Todo/Add-Todo";
-// import Alert from "../Alert/Alert";
+
 import "./Main-Content.styles.css";
 import { Summary } from "../Summary/Summary";
 import Header from "../Header/Header";
@@ -13,6 +12,7 @@ import {
   isTomorrow,
   isThisWeek,
   // differenceInHours,
+  compareAsc,
   differenceInMinutes
 } from "date-fns";
 
@@ -21,7 +21,8 @@ import {
   H3,
   Tab,
   Tabs,
-  Divider
+  Divider,
+  Alert
   // Callout,
   // ProgressBar,
   // Button,
@@ -90,7 +91,7 @@ class MainContent extends React.Component {
   // Takes last object's id from the todos array in oldid
   // Increments it by 1
   // Creates new todo objet with id as newid, text from the state and completed default as false
-  addTodo = (title, startDate, endDate, urgentLevel, type) => {
+  addTodo = (title, startDate, endDate, rating, type) => {
     let oldid = this.state.todos[this.state.todos.length - 1].id;
     let newid = oldid + 1;
     const newTodo = {
@@ -98,7 +99,7 @@ class MainContent extends React.Component {
       title: title,
       start: startDate,
       end: endDate,
-      urgentLevel: urgentLevel,
+      rating: rating,
       type: type,
       completed: false
     };
@@ -157,6 +158,9 @@ class MainContent extends React.Component {
     this.setState({ show: false });
   };
 
+  showEvent = event => {
+    return alert(event.title);
+  };
   render() {
     moment.locale("en-GB");
     const localizer = momentLocalizer(moment);
@@ -164,16 +168,19 @@ class MainContent extends React.Component {
     const { todos, show } = this.state;
 
     // const totalPendingTodos = todos.filter(todo => !todo.completed).length;
-    const todoItems = todos.map(item => (
-      <TodoItem
-        key={item.id}
-        handleChange={this.handleChange}
-        item={item}
-        deleteTodo={this.deleteTodo}
-      />
-    ));
+    const todoItems = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      .map(item => (
+        <TodoItem
+          key={item.id}
+          handleChange={this.handleChange}
+          item={item}
+          deleteTodo={this.deleteTodo}
+        />
+      ));
 
-    const totalCompleted = todos.filter(item => item.completed !== true).length;
+    const totalCompleted = todos.filter(item => item.completed === false)
+      .length;
 
     // Get total minutes to complete task
     let totalTime = 0;
@@ -182,6 +189,7 @@ class MainContent extends React.Component {
     // );
 
     const todayItems = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isToday(item.start) === true)
       .map(item => (
         <TodoItem
@@ -196,6 +204,7 @@ class MainContent extends React.Component {
       .length;
 
     const tommorowItems = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isTomorrow(item.start) === true)
       .map(item => (
         <TodoItem
@@ -207,6 +216,7 @@ class MainContent extends React.Component {
       ));
 
     const thisWeekItems = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isThisWeek(item.start) === true)
       .map(item => {
         return (
@@ -239,7 +249,7 @@ class MainContent extends React.Component {
         <p>You have {todoItems.length} todos in total</p>
         <p>Time required {totalTime} minutes</p>
         <p>
-          {totalCompleted} of {todoItems.length} completed
+          {totalCompleted} of {todoItems.length} needs to be completed
         </p>
         <p className={Classes.RUNNING_TEXT}>{todoItems}</p>
       </div>
@@ -250,7 +260,7 @@ class MainContent extends React.Component {
         <H3>Today</H3>
         <p>You have {todayItems.length} todos today</p>
         <p>
-          {todayCompleted} of {todayItems.length} completed
+          {todayCompleted} of {todayItems.length} needs to be completed
         </p>
         <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
       </div>
@@ -266,6 +276,7 @@ class MainContent extends React.Component {
     );
 
     const urgentItems = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => item.urgentLevel === "five" || isToday(item.start))
       .map(item => {
         return (
@@ -287,6 +298,7 @@ class MainContent extends React.Component {
     );
 
     const workTodosItem = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(todo => todo.type === "work")
       .map(item => {
         return (
@@ -300,6 +312,7 @@ class MainContent extends React.Component {
       });
 
     const personalTodosItem = todos
+      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => item.type === "personal")
       .map(item => {
         return (
@@ -347,11 +360,15 @@ class MainContent extends React.Component {
       </div>
     );
 
-    const SearchPanel = () => (
+    const UpcomingPanel = () => (
       <div>
-        <H3>Search</H3>
+        <H3>Upcoming</H3>
+        {
+          // <Dropdown todos={todos} />
+        }{" "}
       </div>
     );
+
     return (
       <div>
         <Header
@@ -360,9 +377,10 @@ class MainContent extends React.Component {
           alert={this.alert}
           addTodo={this.addTodo}
           setAlert={this.setAlert}
+          todos={todos}
         />
 
-        <div className="container-fluid pt-5">
+        <div className="container pt-5 b">
           {show === false ? (
             <div className="row">
               <Divider />
@@ -374,6 +392,7 @@ class MainContent extends React.Component {
                     key={this.state.vertical ? "vertical" : "horizontal"}
                     renderActiveTabPanelOnly={this.state.activePanelOnly}
                     vertical={this.state.vertical}
+                    large={true}
                     style={{ textDecoration: "none" }}
                   >
                     <Tab id="all" title="All" panel={<AllPanel />} />
@@ -387,6 +406,11 @@ class MainContent extends React.Component {
                       id="thisWeek"
                       title="This Week"
                       panel={<ThisWeekPanel />}
+                    />
+                    <Tab
+                      id="upcomingEvents"
+                      title="Upcoming Events"
+                      panel={<UpcomingPanel />}
                     />
                     <Tab
                       id="Summary"
@@ -404,6 +428,7 @@ class MainContent extends React.Component {
                   </Tabs>
                 </Example>
               </div>
+              <Divider />
             </div>
           ) : (
             <div style={{ height: 650, padding: "20px" }}>
@@ -415,8 +440,7 @@ class MainContent extends React.Component {
                 step={60}
                 popup={true}
                 popupOffset={30}
-                // onSelectEvent={this.showEvent} // Shows todo details
-                // onSelectSlot={this.handleSelect}
+                onSelectEvent={this.showEvent}
                 views={["month", "week", "day", "agenda"]}
               />
             </div>

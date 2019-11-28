@@ -1,12 +1,12 @@
 const todosData = [
   {
     id: 1,
-    title: "Make breakfast at 8am",
+    title: "Add Edit for todo title",
     completed: false,
     start: new Date("November 25 2019 01:24:00"),
     end: new Date("November 25 2019 02:24:00"),
     type: "work",
-    urgentLevel: "four"
+    rating: 4
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ const todosData = [
     end: new Date("November 26 2019 01:00:00"),
     completed: false,
     type: "work",
-    urgentLevel: "five"
+    rating: 2
   },
   {
     id: 3,
@@ -24,7 +24,7 @@ const todosData = [
     end: new Date("November 26 2019 05:24:00"),
     completed: false,
     type: "work",
-    urgentLevel: "three"
+    rating: 5
   },
   {
     id: 4,
@@ -33,25 +33,25 @@ const todosData = [
     start: new Date("November 29 2019 03:24:00"),
     end: new Date("November 30 2019 04:24:00"),
     type: "personal",
-    urgentLevel: "five"
+    rating: 1
   },
   {
     id: 5,
-    title: "Exam Starts",
-    completed: false,
-    start: new Date("December 5 2019 09:00:00"),
-    end: new Date("December 5 2019 11:00:00"),
-    type: "personal",
-    urgentLevel: "five"
-  },
-  {
-    id: 6,
     title: "Exam ends",
     completed: false,
     start: new Date("December 10 2019 09:00:00"),
     end: new Date("December 11 2019 11:00:00"),
     type: "personal",
-    urgentLevel: "five"
+    rating: 5
+  },
+  {
+    id: 6,
+    title: "Exam Starts",
+    completed: false,
+    start: new Date("December 5 2019 09:00:00"),
+    end: new Date("December 5 2019 11:00:00"),
+    type: "personal",
+    rating: 2
   }
 ];
 
