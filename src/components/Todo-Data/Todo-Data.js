@@ -39,7 +39,7 @@ const todosData = [
     id: 5,
     title: "Exam ends",
     completed: false,
-    start: new Date("December 10 2019 09:00:00"),
+    start: new Date("November 30 2019 09:00:00"),
     end: new Date("December 11 2019 11:00:00"),
     type: "personal",
     rating: 5

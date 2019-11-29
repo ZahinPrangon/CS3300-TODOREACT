@@ -13,8 +13,9 @@ import { format, differenceInMinutes, compareAsc } from "date-fns";
 
 export default class DropdownMenuExample extends React.Component {
   render() {
-    const todoItems = this.props.todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+    const { todos } = this.props;
+    const todoItems = todos
+      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .map(item => {
         let hours = differenceInMinutes(item.end, item.start) / 60;
         let rhours = Math.floor(hours);
@@ -35,9 +36,9 @@ export default class DropdownMenuExample extends React.Component {
     );
     return (
       <Example options={false} {...this.props}>
-        <span class="button__badge">{this.props.todos.length}</span>
+        <span class="button__badge">{todos.length}</span>
         <Popover
-          content={this.props.todos.length > 0 ? exampleMenu : nothingMenu}
+          content={todos.length > 0 ? exampleMenu : nothingMenu}
           position={Position.BOTTOM_LEFT}
         >
           <Button minimal icon="notifications" />

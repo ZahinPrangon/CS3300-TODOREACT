@@ -7,15 +7,13 @@ import { Summary } from "../Summary/Summary";
 import Header from "../Header/Header";
 
 import {
-  // format,
+  format,
   isToday,
   isTomorrow,
   isThisWeek,
-  // differenceInHours,
   compareAsc,
   differenceInMinutes,
-  isThisYear,
-  format
+  differenceInHours
 } from "date-fns";
 
 import {
@@ -24,21 +22,20 @@ import {
   Tab,
   Tabs,
   Divider,
-  Alert
-  // Callout,
-  // ProgressBar,
-  // Button,
-  // ButtonGroup
+  Navbar,
+  Alignment
 } from "@blueprintjs/core";
 import { Example, handleBooleanChange } from "@blueprintjs/docs-theme";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import AddTodo from "../Add-Todo/Add-Todo";
+import SecondaryNav from "../Secondary-Nav/Secondary-Nav";
+// import AddTodo from "../Add-Todo/Add-Todo";
 
 class MainContent extends React.Component {
   constructor(props) {
     super(props);
+
     // State initialized here for todosData and Alert
     this.state = {
       todos: todosData,
@@ -52,7 +49,7 @@ class MainContent extends React.Component {
       search: "",
       activePanelOnly: false,
       animate: true,
-      navbarTabId: "Today",
+      navbarTabId: "Todos",
       vertical: false,
       view: "day",
       visible: false
@@ -65,9 +62,9 @@ class MainContent extends React.Component {
   toggleAnimate = handleBooleanChange(animate => this.setState({ animate }));
   toggleVertical = handleBooleanChange(vertical => this.setState({ vertical }));
 
-  showEvent = (todos, isOpen) => {
-    return alert(todos.start);
-  };
+  // showEvent = (todos, isOpen) => {
+  //   return alert(todos.start);
+  // };
 
   // Update state so that the item with the given id flips changes from false to true
   // HandleChange function changes the state takes in previous state
@@ -84,6 +81,7 @@ class MainContent extends React.Component {
         }
         return todo;
       });
+      console.log(updatedTodos);
       return {
         todos: updatedTodos // Sets todos as updated todos
       };
@@ -94,11 +92,12 @@ class MainContent extends React.Component {
   // Takes last object's id from the todos array in oldid
   // Increments it by 1
   // Creates new todo objet with id as newid, text from the state and completed default as false
+  // TODO: ID STAYS THE SAME WHEN MULTIPLE TODO IS ADDED
   addTodo = (title, startDate, endDate, rating, type) => {
-    let oldid = this.state.todos[this.state.todos.length - 1].id;
-    let newid = oldid + 1;
+    let oldid = this.state.todos.length + 1;
+    // newid = oldid + 1;
     const newTodo = {
-      id: newid,
+      id: oldid++,
       title: title,
       start: startDate,
       end: endDate,
@@ -106,6 +105,9 @@ class MainContent extends React.Component {
       type: type,
       completed: false
     };
+
+    console.log(newTodo);
+    // console.log("Newid is", newid);
     // Sets State with todos as previous todos and then adding the new todo in the last of the array
     this.setState({ todos: [...this.state.todos, newTodo] });
   };
@@ -119,17 +121,17 @@ class MainContent extends React.Component {
   };
 
   // Sets alert when empty input field is submitted
-  setAlert = msg => {
-    // Sets state with the message passed into alert state
-    this.setState({
-      alert: { msg }
-    });
+  // setAlert = msg => {
+  //   // Sets state with the message passed into alert state
+  //   this.setState({
+  //     alert: { msg }
+  //   });
 
-    // Removes the alert component by setting it to null after 4 seconds
-    setTimeout(() => {
-      this.setState({ alert: null });
-    }, 4000);
-  };
+  //   // Removes the alert component by setting it to null after 4 seconds
+  //   setTimeout(() => {
+  //     this.setState({ alert: null });
+  //   }, 4000);
+  // };
 
   todayTodos = () => {
     const { today } = this.state;
@@ -161,38 +163,30 @@ class MainContent extends React.Component {
     this.setState({ show: false });
   };
 
-  showEvent = event => {
-    return alert(event.title);
-  };
+  // showEvent = event => {
+  //   return alert(event.title);
+  // };
+
   render() {
     moment.locale("en-GB");
     const localizer = momentLocalizer(moment);
+
     // Destructuring the state
     const { todos, show } = this.state;
 
-    // const totalPendingTodos = todos.filter(todo => !todo.completed).length;
-    const todoItems = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
-      .map(item => (
-        <TodoItem
-          key={item.id}
-          handleChange={this.handleChange}
-          item={item}
-          deleteTodo={this.deleteTodo}
-        />
-      ));
+    const todoItems = todos.map(item => (
+      <TodoItem
+        key={item.id}
+        handleChange={this.handleChange}
+        item={item}
+        deleteTodo={this.deleteTodo}
+      />
+    ));
 
     const totalCompleted = todos.filter(item => item.completed === false)
       .length;
 
-    // Get total minutes to complete task
-    let totalTime = 0;
-    // const totaltimeRequired = todos.forEach(
-    //   element => (totalTime += differenceInMinutes(element.end, element.start))
-    // );
-
     const todayItems = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isToday(item.start) === true)
       .map(item => (
         <TodoItem
@@ -203,11 +197,7 @@ class MainContent extends React.Component {
         />
       ));
 
-    const todayCompleted = todayItems.filter(todo => todo.completed !== false)
-      .length;
-
     const tommorowItems = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isTomorrow(item.start) === true)
       .map(item => (
         <TodoItem
@@ -219,7 +209,7 @@ class MainContent extends React.Component {
       ));
 
     const thisWeekItems = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isThisWeek(item.start) === true)
       .map(item => {
         return (
@@ -232,30 +222,34 @@ class MainContent extends React.Component {
         );
       });
 
-    // Time required for this week's
-    // TODO - need to fix
-    const totaltimeRequired = todos
-      .filter(
-        element =>
-          isThisWeek(element.start) === true && element.completed === false
-      )
+    // Get total minutes to complete task
+    let totalTime = 0;
+    const totalTimeAll = todos
+      .filter(element => element.completed === false)
       .forEach(
-        element =>
-          (totalTime += differenceInMinutes(element.end, element.start))
+        element => (totalTime += differenceInHours(element.end, element.start))
       );
-    console.log(totaltimeRequired);
 
     const AllPanel = () => (
       <div>
         {todoItems.length > 0 ? (
           <div>
             <H3>All Todos</H3>
-            <p>You have {todoItems.length} todos in total</p>
-            <p>Time required {totalTime} minutes</p>
-            <p>
-              {totalCompleted} of {todoItems.length} needs to be completed
-            </p>
-            <p className={Classes.RUNNING_TEXT}>{todoItems}</p>
+            <div className="text-right">
+              <p>
+                You have <b>{todoItems.length}</b> todos in total
+              </p>
+              <Divider />
+              <p>
+                Time required <b>{totalTime}</b> Hours
+              </p>
+              <Divider />
+              <p>
+                <b>{totalCompleted}</b> of <b>{todoItems.length}</b> needs to be
+                completed
+              </p>
+            </div>
+            {todoItems}
           </div>
         ) : (
           <div>
@@ -266,17 +260,35 @@ class MainContent extends React.Component {
       </div>
     );
 
-    // TODO: ADD Nothing to show for all
+    let todayTime = 0;
+    const totalTimeToday = todos
+      .filter(element => isToday(element.start) && element.completed === false)
+      .forEach(
+        element =>
+          (todayTime += differenceInMinutes(element.end, element.start))
+      );
+    let tommorowTime = 0;
+    const totalTimeTommorow = todos
+      .filter(
+        element => isTomorrow(element.start) && element.completed === false
+      )
+      .forEach(
+        element =>
+          (tommorowTime += differenceInMinutes(element.end, element.start))
+      );
+
     const TodayPanel = () => (
       <div>
         {todayItems.length > 0 ? (
           <div>
             <H3>Today's Todos</H3>
-            <p>You have {todayItems.length} todos today</p>
-            <p>Time required {totalTime} minutes</p>
-            <p>
-              {todayCompleted} of {todayItems.length} needs to be completed
-            </p>
+            <div className="text-right">
+              <p>
+                You have <b>{todayItems.length}</b> todos today
+              </p>
+              <Divider />
+              <p>Time required {todayTime} minutes</p>
+            </div>
             <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
           </div>
         ) : (
@@ -297,24 +309,34 @@ class MainContent extends React.Component {
         {tommorowItems.length > 0 ? (
           <div>
             <H3>Tommorow's Todos</H3>
-            <p>You have {tommorowItems.length} todos today</p>
-            <p>
-              {tommorowCompleted} of {tommorowItems.length} needs to be
-              completed
-            </p>
+            <div className="text-right">
+              <p>
+                You have <b>{tommorowItems.length}</b>todos today
+              </p>
+              <Divider />
+              <p>
+                Time required: <b>{tommorowTime}</b> minutes
+              </p>
+              <Divider />
+              <p>
+                <b>{tommorowCompleted}</b> of <b>{tommorowItems.length}</b>{" "}
+                needs to be completed
+              </p>
+              <Divider />
+            </div>
             <p className={Classes.RUNNING_TEXT}>{tommorowItems}</p>
           </div>
         ) : (
           <div>
             <H3>Tommorow's Todos</H3>
-            <p className="font-weight-bold">Nothing for tommorow</p>
+            <p>Nothing for tommorow</p>
           </div>
         )}
       </div>
     );
 
     const urgentItems = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => item.urgentLevel === "five" || isToday(item.start))
       .map(item => {
         return (
@@ -345,7 +367,7 @@ class MainContent extends React.Component {
     );
 
     const workTodosItem = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(todo => todo.type === "work")
       .map(item => {
         return (
@@ -359,7 +381,7 @@ class MainContent extends React.Component {
       });
 
     const personalTodosItem = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => item.type === "personal")
       .map(item => {
         return (
@@ -428,7 +450,7 @@ class MainContent extends React.Component {
     );
 
     const upcomingTodos = todos
-      .sort((item1, item2) => compareAsc(item1.start, item2.start))
+      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isThisWeek(item.start) === false)
       .map(item => (
         <div className="text-center">
@@ -455,6 +477,9 @@ class MainContent extends React.Component {
       </div>
     );
 
+    // const TodosPanel = () => (
+
+    // )
     return (
       <div>
         <Header
@@ -466,18 +491,16 @@ class MainContent extends React.Component {
           todos={todos}
         />
 
-        <div className="container pt-5 b">
+        <div className="container pt-5 ">
           {show === false ? (
-            <div className="row">
+            <div className="row home">
               <Divider />
               <div className="col-md pt-2">
                 <Example className="docs-tabs-example" {...this.props}>
                   <Tabs
                     animate={this.state.animate}
                     id="TabsExample"
-                    key={this.state.vertical ? "vertical" : "horizontal"}
                     renderActiveTabPanelOnly={this.state.activePanelOnly}
-                    vertical={this.state.vertical}
                     large={true}
                     style={{ textDecoration: "none" }}
                   >

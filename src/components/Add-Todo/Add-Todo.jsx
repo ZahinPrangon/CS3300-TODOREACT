@@ -1,15 +1,12 @@
 import React from "react";
-// import DateTimePicker from "react-datetime-picker";
-import Datetime from "react-datetime";
+import DateTimePicker from "react-datetime-picker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Button, Classes, Dialog } from "@blueprintjs/core";
+import { Button, Classes, Switch, Dialog } from "@blueprintjs/core";
 import StarRatingComponent from "react-star-rating-component";
 import {
   NotificationContainer,
   NotificationManager
 } from "react-notifications";
-
-import "./Add-Todo.styles.css";
 
 class AddTodo extends React.Component {
   // Component state to get the title from the input
@@ -62,6 +59,7 @@ class AddTodo extends React.Component {
     } else if (this.state.endDate === "") {
       NotificationManager.warning("Please enter a end date and time");
     } else {
+      alert(`Todo Added, ${this.state.title}`);
       // Adding addTodo function as prop and passing the state's title as param
       this.props.addTodo(
         this.state.title,
@@ -70,25 +68,21 @@ class AddTodo extends React.Component {
         this.state.rating,
         this.state.type
       );
-      NotificationManager.success("TODO ADDED", this.state.title);
       // Changing the state to an empty string
       this.setState({
         title: "",
-        startDate: "",
+        startDate: new Date(),
         endDate: "",
         rating: 1,
         type: "work"
       });
     }
+    // NotificationManager.success("Todo Added", this.state.title);
   };
 
   render() {
     // const today = new Date();
     const { title, startDate, endDate, type, rating } = this.state;
-    var yesterday = Datetime.moment().subtract(1, "day");
-    var valid = function(current) {
-      return current.isAfter(yesterday);
-    };
     return (
       <div>
         <div {...this.props}>
@@ -110,28 +104,27 @@ class AddTodo extends React.Component {
                   type="text"
                   name="title"
                   placeholder="Add Todo..."
+                  style={{ flex: "10", marginBottom: "5px" }}
                   value={title}
                   onChange={this.onChange}
                 />
-
                 <label>Start Date</label>
-                <Datetime
-                  // minDate={new Date()}
+
+                <DateTimePicker
+                  // disabledDays={{ before: today }}
+                  minDate={startDate}
                   onChange={this.onChangeStartDate}
                   value={startDate}
-                  isValidDate={valid}
-                  // style={{ marginBottom: "5px" }}
+                  style={{ marginBottom: "5px" }}
                 />
                 <label>End Date</label>
-                <Datetime
-                  // minDate={new Date()}
+                <DateTimePicker
+                  minDate={startDate}
                   onChange={this.onChangeEndDate}
                   value={endDate}
-                  isValidDate={valid}
-                  // style={{ marginBottom: "5px" }}
+                  style={{ marginBottom: "5px" }}
                 />
-
-                <label className="pt-1 mr-1">Add an importance level</label>
+                <span className="pt-2 mr-1">Add an importance level</span>
                 <div
                   style={{
                     display: "flex",
@@ -170,24 +163,4 @@ class AddTodo extends React.Component {
   }
 }
 
-// <label>Enter the level of urgent for this todo</label>
-// <select
-//   className="form-control"
-//   value={this.state.urgentLevel}
-//   onChange={this.onChangeUrgent}
-// >
-//   <option value="one">one</option>
-//   <option value="two">two</option>
-//   <option value="three">three</option>
-//   <option value="four">four</option>
-//   <option value="five">five</option>
-// </select>
 export default AddTodo;
-
-// <Switch
-// className="pt-1"
-// checked={isPublic}
-// label="All day"
-// large
-// onChange={this.handlePublicChange}
-// />

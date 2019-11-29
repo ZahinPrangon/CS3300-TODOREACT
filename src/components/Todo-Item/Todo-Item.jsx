@@ -13,9 +13,8 @@ function TodoItem(props) {
   };
 
   const cardStyle = {
-    backgroundColor: "",
     marginBottom: "15px",
-    width: "48%",
+    width: "100%",
     display: "inline-block",
     marginRight: "15px",
     justifyContent: "center"
