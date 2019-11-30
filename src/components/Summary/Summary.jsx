@@ -1,6 +1,6 @@
 import React from "react";
 import { Divider, Callout } from "@blueprintjs/core";
-import { format } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import StarRatingComponent from "react-star-rating-component";
 
 export const Summary = props => {
@@ -31,6 +31,13 @@ export const Summary = props => {
       <td>{format(todo.start, "PPPP")}</td>
       <td>{format(todo.end, "PPPP")}</td>
       <td>{todo.type}</td>
+      <td>
+        {differenceInCalendarDays(todo.start, new Date()) >= 0 ? (
+          differenceInCalendarDays(todo.start, new Date()) + " day"
+        ) : (
+          <p>Past date</p>
+        )}
+      </td>
       <td>{todo.completed.toString()}</td>
     </tr>
   ));
@@ -46,6 +53,7 @@ export const Summary = props => {
               <th scope="col">Start Date</th>
               <th scope="col">End Date</th>
               <th scope="col">Type</th>
+              <th scope="col">Due in</th>
               <th scope="col">Completed</th>
             </tr>
           </thead>

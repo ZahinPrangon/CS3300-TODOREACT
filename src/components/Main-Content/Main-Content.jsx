@@ -277,7 +277,7 @@ class MainContent extends React.Component {
           (tommorowTime += differenceInMinutes(element.end, element.start))
       );
 
-    const TodayPanel = () => (
+    const TodayPanelAll = () => (
       <div>
         {todayItems.length > 0 ? (
           <div>
@@ -287,7 +287,9 @@ class MainContent extends React.Component {
                 You have <b>{todayItems.length}</b> todos today
               </p>
               <Divider />
-              <p>Time required {todayTime} minutes</p>
+              <p>
+                Time required <b>{todayTime}</b> minutes
+              </p>
             </div>
             <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
           </div>
@@ -300,10 +302,132 @@ class MainContent extends React.Component {
       </div>
     );
 
+    const workTodosItemToday = todos
+      .filter(todo => todo.type === "work" && isToday(todo.start))
+      .map(item => {
+        return (
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const personalTodosItemToday = todos
+      .filter(todo => todo.type === "personal" && isToday(todo.start))
+      .map(item => {
+        return (
+          <TodoItem
+            key={item.id}
+            handleChange={this.handleChange}
+            item={item}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const WorkPanelToday = () => (
+      <div>
+        {workTodosItemToday.length > 0 ? (
+          <div>
+            <H3>Work Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>{workTodosItemToday}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>Work Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+          </div>
+        )}
+      </div>
+    );
+
+    const PersonalPanelToday = () => (
+      <div>
+        {personalTodosItemToday.length > 0 ? (
+          <div>
+            <H3>Personal Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>{personalTodosItemToday}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>Personal Todos</H3>
+            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+          </div>
+        )}
+      </div>
+    );
+
+    const urgentItemsToday = todos
+      .filter(
+        todo => isToday(todo.start) && isToday(todo.end) && todo.rating > 4
+      )
+      .map(todo => {
+        return (
+          <TodoItem
+            key={todo.id}
+            handleChange={this.handleChange}
+            item={todo}
+            deleteTodo={this.deleteTodo}
+          />
+        );
+      });
+
+    const UrgentPanelToday = () => (
+      <div>
+        {urgentItemsToday.length > 0 ? (
+          <div>
+            <H3>
+              Urgent todos starts and ends today with a ranking greater than
+              <span role="img" aria-label="star">
+                ⭐⭐⭐⭐
+              </span>
+            </H3>
+            <p className={Classes.RUNNING_TEXT}>{urgentItemsToday}</p>
+          </div>
+        ) : (
+          <div>
+            <H3>
+              Urgent Todos starts and ends today with a ranking greater than
+              <span role="img" aria-label="star">
+                ⭐⭐⭐⭐
+              </span>
+            </H3>
+            <p className={Classes.RUNNING_TEXT}>Nothing to show </p>
+          </div>
+        )}
+      </div>
+    );
+
+    const TodayPanel = () => (
+      <Tabs
+        // animate={this.state.animate}
+        id="TabsExample"
+        large={true}
+        style={{ textDecoration: "none" }}
+      >
+        <Tab id="WorkToday" title="Work" panel={<WorkPanelToday />} />
+        <Tab
+          id="PersonalToday"
+          title="Personal"
+          panel={<PersonalPanelToday />}
+        />
+        <Tab id="UrgentToday" title="Urgent" panel={<UrgentPanelToday />} />
+        <Tab
+          id="TodayPanelAll"
+          title="Today's All Todos"
+          panel={<TodayPanelAll />}
+        />
+      </Tabs>
+    );
+
     const tommorowCompleted = tommorowItems.filter(
       item => item.completed === false
     ).length;
 
+    // Tommorow all todos //
     const TommorowPanel = () => (
       <div>
         {tommorowItems.length > 0 ? (
@@ -311,7 +435,7 @@ class MainContent extends React.Component {
             <H3>Tommorow's Todos</H3>
             <div className="text-right">
               <p>
-                You have <b>{tommorowItems.length}</b>todos today
+                You have <b>{tommorowItems.length}</b> todos tommorow
               </p>
               <Divider />
               <p>
@@ -322,7 +446,6 @@ class MainContent extends React.Component {
                 <b>{tommorowCompleted}</b> of <b>{tommorowItems.length}</b>{" "}
                 needs to be completed
               </p>
-              <Divider />
             </div>
             <p className={Classes.RUNNING_TEXT}>{tommorowItems}</p>
           </div>
@@ -336,8 +459,12 @@ class MainContent extends React.Component {
     );
 
     const urgentItems = todos
-      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
-      .filter(item => item.urgentLevel === "five" || isToday(item.start))
+      .filter(
+        item =>
+          item.rating === 5 ||
+          isToday(item.start) ||
+          differenceInHours(item.end, item.start) > 5
+      )
       .map(item => {
         return (
           <TodoItem
@@ -349,12 +476,15 @@ class MainContent extends React.Component {
         );
       });
 
-    const UrgentPanel = () => (
+    const SearchPanel = () => (
       <div>
         {urgentItems.length > 0 ? (
           <div>
-            <H3>URGENT</H3>
-            <h6>Todos with most urgent level or due today</h6>
+            <H3>Search</H3>
+            <h6>
+              Todos with most urgent level or due today or takes more than 5
+              hours to complete the todo
+            </h6>
             {urgentItems}
           </div>
         ) : (
@@ -367,7 +497,6 @@ class MainContent extends React.Component {
     );
 
     const workTodosItem = todos
-      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(todo => todo.type === "work")
       .map(item => {
         return (
@@ -381,7 +510,6 @@ class MainContent extends React.Component {
       });
 
     const personalTodosItem = todos
-      // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => item.type === "personal")
       .map(item => {
         return (
@@ -394,11 +522,38 @@ class MainContent extends React.Component {
         );
       });
 
+    let totalTimeWeek = 0;
+    const thisWeekTime = todos
+      .filter(element => isThisWeek(element.start))
+      .forEach(
+        element =>
+          (totalTimeWeek += differenceInHours(element.end, element.start))
+      );
+
+    const totalCompletedWeek = todos.filter(
+      element => isThisWeek(element.start) && element.completed === false
+    ).length;
+
     const ThisWeekPanel = () => (
       <div>
         {thisWeekItems.length > 0 ? (
           <div>
-            <H3>This Week Todos</H3>
+            <H3>This Week's Todos</H3>
+            <div className="text-right">
+              <p>
+                You have <b>{thisWeekItems.length}</b> todos this week
+              </p>
+              <Divider />
+              <p>
+                Total time required <b>{totalTimeWeek}</b> hours
+              </p>
+              <Divider />
+              <p>
+                <b>{totalCompletedWeek}</b> of <b>{thisWeekItems.length}</b>{" "}
+                needs to be completed
+              </p>
+              <Divider />
+            </div>
             <p className={Classes.RUNNING_TEXT}>{thisWeekItems}</p>
           </div>
         ) : (
@@ -477,9 +632,6 @@ class MainContent extends React.Component {
       </div>
     );
 
-    // const TodosPanel = () => (
-
-    // )
     return (
       <div>
         <Header
@@ -504,7 +656,6 @@ class MainContent extends React.Component {
                     large={true}
                     style={{ textDecoration: "none" }}
                   >
-                    <Tab id="all" title="All" panel={<AllPanel />} />
                     <Tab id="today" title="Today" panel={<TodayPanel />} />
                     <Tab
                       id="tommorow"
@@ -532,7 +683,8 @@ class MainContent extends React.Component {
                       title="Personal Todos"
                       panel={<PersonalPanel />}
                     />
-                    <Tab id="Urgent" title="Urgent" panel={<UrgentPanel />} />
+                    <Tab id="search" title="Search" panel={<SearchPanel />} />
+                    <Tab id="all" title="All" panel={<AllPanel />} />
                     <Tabs.Expander />
                   </Tabs>
                 </Example>

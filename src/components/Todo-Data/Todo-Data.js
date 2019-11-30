@@ -3,16 +3,16 @@ const todosData = [
     id: 1,
     title: "Add Edit for todo title",
     completed: false,
-    start: new Date("November 25 2019 01:24:00"),
-    end: new Date("November 25 2019 02:24:00"),
+    start: new Date(),
+    end: new Date(),
     type: "work",
     rating: 4
   },
   {
     id: 2,
     title: "Talk to Jian Tang after class at 1pm",
-    start: new Date("November 26 2019 01:00:00"),
-    end: new Date("November 26 2019 01:00:00"),
+    start: new Date(),
+    end: new Date(),
     completed: false,
     type: "work",
     rating: 2
@@ -20,8 +20,8 @@ const todosData = [
   {
     id: 3,
     title: "Finish CS3401",
-    start: new Date("November 28 2019 04:24:00"),
-    end: new Date("November 29 2019 05:24:00"),
+    start: new Date(),
+    end: new Date(),
     completed: false,
     type: "work",
     rating: 5

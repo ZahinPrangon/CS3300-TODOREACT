@@ -1,6 +1,6 @@
 import React from "react";
 import Moment from "react-moment";
-import { differenceInMinutes } from "date-fns";
+import { differenceInMinutes, differenceInCalendarDays } from "date-fns";
 import { H2, Divider, Checkbox, Button, Card, Tag } from "@blueprintjs/core";
 import StarRatingComponent from "react-star-rating-component";
 
@@ -26,8 +26,20 @@ function TodoItem(props) {
   let rminutes = Math.round(minutes);
 
   return (
-    <Card interactive style={cardStyle}>
+    <Card className="text-center" interactive style={cardStyle}>
       <div style={props.item.completed ? completedStyle : null}>
+        <div
+          className="d-flex justify-content-end text-muted"
+          style={{ flexDirection: "column" }}
+        >
+          <div className="text-right">
+            {differenceInCalendarDays(props.item.end, props.item.start) > 0
+              ? "Ends in " +
+                differenceInCalendarDays(props.item.end, props.item.start) +
+                " day"
+              : "Todo ends today"}
+          </div>
+        </div>
         <Checkbox
           large
           type="checkbox"
@@ -37,7 +49,7 @@ function TodoItem(props) {
         />
         <H2 className="text-center">{props.item.title}</H2>
         <span>
-          <Tag large round active>
+          <Tag large round active className="p-2">
             {props.item.type}
           </Tag>
         </span>
