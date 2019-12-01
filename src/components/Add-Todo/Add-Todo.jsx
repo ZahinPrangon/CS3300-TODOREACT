@@ -112,14 +112,14 @@ class AddTodo extends React.Component {
 
                 <DateTimePicker
                   // disabledDays={{ before: today }}
-                  minDate={startDate}
+                  minDate={new Date()}
                   onChange={this.onChangeStartDate}
                   value={startDate}
                   style={{ marginBottom: "5px" }}
                 />
                 <label>End Date</label>
                 <DateTimePicker
-                  minDate={startDate}
+                  minDate={new Date()}
                   onChange={this.onChangeEndDate}
                   value={endDate}
                   style={{ marginBottom: "5px" }}

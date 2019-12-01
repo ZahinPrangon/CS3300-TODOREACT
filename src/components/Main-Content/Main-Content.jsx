@@ -11,15 +11,19 @@ import {
   isTomorrow,
   isThisWeek,
   differenceInMinutes,
-  differenceInHours
+  differenceInHours,
+  compareAsc
 } from "date-fns";
 
 import { Classes, H3, Tab, Tabs, Divider } from "@blueprintjs/core";
 import { Example, handleBooleanChange } from "@blueprintjs/docs-theme";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.scss";
 
+const DragAndDropCalendar = withDragAndDrop(Calendar);
 class MainContent extends React.Component {
   constructor(props) {
     super(props);
@@ -35,12 +39,50 @@ class MainContent extends React.Component {
       activePanelOnly: false,
       activePanelToday: false,
       animate: true,
-      navbarTabId: "Today",
       vertical: false,
       view: "day",
       visible: false
     };
+    this.moveEvent = this.moveEvent.bind(this);
   }
+
+  moveEvent({ event, start, end, isAllDay: droppedOnAllDaySlot }) {
+    const { todos } = this.state;
+
+    const idx = todos.indexOf(event);
+    let allDay = event.allDay;
+
+    if (!event.allDay && droppedOnAllDaySlot) {
+      allDay = true;
+    } else if (event.allDay && !droppedOnAllDaySlot) {
+      allDay = false;
+    }
+
+    const updatedEvent = { ...event, start, end, allDay };
+
+    const nextEvents = [...todos];
+    nextEvents.splice(idx, 1, updatedEvent);
+
+    this.setState({
+      todos: nextEvents
+    });
+
+    // alert(`${event.title} was dropped onto ${updatedEvent.start}`)
+  }
+
+  resizeEvent = ({ event, start, end }) => {
+    const { todos } = this.state;
+
+    const nextEvents = todos.map(existingEvent => {
+      return existingEvent.id === event.id
+        ? { ...existingEvent, start, end }
+        : existingEvent;
+    });
+
+    this.setState({
+      todos: nextEvents
+    });
+  };
 
   toggleActiveOnly = handleBooleanChange(activePanelOnly =>
     this.setState({ activePanelOnly })
@@ -145,6 +187,7 @@ class MainContent extends React.Component {
 
     // Destructuring the state
     const { todos, show } = this.state;
+    const todaytodos = todos.filter(todo => isToday(todo.start));
 
     const todoItems = todos.map(item => (
       <TodoItem
@@ -347,6 +390,45 @@ class MainContent extends React.Component {
       </div>
     );
 
+    // Panel to show most time needed in sorted manner
+    const UrgentTimePanelToday = () => {
+      const todoUrgentTime = todos
+        .slice()
+        .sort((item1, item2) => compareAsc(item1.start, item2.start))
+        .filter(item => isToday(item.start))
+        .map(item => {
+          return (
+            <TodoItem
+              key={item.id}
+              handleChange={this.handleChange}
+              item={item}
+              deleteTodo={this.deleteTodo}
+            />
+          );
+        });
+      return (
+        <div>
+          {todoUrgentTime.length > 0 ? (
+            <div>
+              <H3>Most time required Todos for today</H3>
+              <div className="text-right">
+                <p>
+                  You have <b>{todoUrgentTime.length}</b> todos today
+                </p>
+                <Divider />
+              </div>
+              <div className={Classes.RUNNING_TEXT}>{todoUrgentTime}</div>
+            </div>
+          ) : (
+            <div>
+              <H3>Most time required Todos for today</H3>
+              <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+            </div>
+          )}
+        </div>
+      );
+    };
+
     const urgentItemsToday = todos
       .filter(
         todo => isToday(todo.start) && isToday(todo.end) && todo.rating > 4
@@ -389,25 +471,29 @@ class MainContent extends React.Component {
     );
 
     const TodayPanel = () => (
-      <Tabs
-      // animate={this.state.animate}
-      // id="TabsExampleToday"
-      // renderActiveTabPanelOnly={this.state.activePanelToday}
-      // large={true}
-      // style={{ textDecoration: "none" }}
-      >
+      <Tabs id="TabsExampleToday" large={true}>
         <Tab
           id="todayPanelAll"
           title="Today's All Todos"
           panel={<TodayPanelAll />}
         />
-        <Tab id="workToday" title="Work Today" panel={<WorkPanelToday />} />
+        <Tab id="workToday" title="Work" panel={<WorkPanelToday />} />
         <Tab
           id="personalToday"
           title="Personal"
           panel={<PersonalPanelToday />}
         />
         <Tab id="UrgentToday" title="Urgent" panel={<UrgentPanelToday />} />
+        <Tab
+          id="SummaryToday"
+          title="Summary Today"
+          panel={<SummaryPanelToday />}
+        />
+        <Tab
+          id="timeToday"
+          title="Most time required"
+          panel={<UrgentTimePanelToday />}
+        />
       </Tabs>
     );
 
@@ -592,6 +678,13 @@ class MainContent extends React.Component {
       </div>
     );
 
+    const SummaryPanelToday = () => (
+      <div>
+        <H3>SUMMARY</H3>
+        <Summary todos={todaytodos} />
+      </div>
+    );
+
     const upcomingTodos = todos
       // .sort((item1, item2) => compareAsc(item1.start, item2.start))
       .filter(item => isThisWeek(item.start) === false)
@@ -671,8 +764,6 @@ class MainContent extends React.Component {
                       title="Personal Todos"
                       panel={<PersonalPanel />}
                     />
-                    <Tab id="search" title="Search" panel={<SearchPanel />} />
-                    <Tab id="all" title="All" panel={<AllPanel />} />
                     <Tabs.Expander />
                   </Tabs>
                 </Example>
@@ -681,10 +772,14 @@ class MainContent extends React.Component {
             </div>
           ) : (
             <div style={{ height: 650, padding: "20px" }}>
-              <Calendar
-                // selectable
+              <DragAndDropCalendar
+                selectable
                 localizer={localizer}
                 events={this.state.todos}
+                onEventDrop={this.moveEvent}
+                resizable
+                onEventResize={this.resizeEvent}
+                defaultView={Views.DAY}
                 showMultiDayTimes
                 step={60}
                 popup={true}

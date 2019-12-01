@@ -1,6 +1,11 @@
 import React from "react";
 import { Divider, Callout } from "@blueprintjs/core";
-import { format, differenceInCalendarDays } from "date-fns";
+import {
+  format,
+  differenceInCalendarDays,
+  differenceInMinutes,
+  compareAsc
+} from "date-fns";
 import StarRatingComponent from "react-star-rating-component";
 
 export const Summary = props => {
@@ -24,23 +29,38 @@ export const Summary = props => {
     }
   }
   let i = 1;
-  const todo = props.todos.map(todo => (
-    <tr key={todo.id}>
-      <th scope="row">{i++}</th>
-      <td>{todo.title}</td>
-      <td>{format(todo.start, "PPPP")}</td>
-      <td>{format(todo.end, "PPPP")}</td>
-      <td>{todo.type}</td>
-      <td>
-        {differenceInCalendarDays(todo.start, new Date()) >= 0 ? (
-          differenceInCalendarDays(todo.start, new Date()) + " day"
-        ) : (
-          <p>Past date</p>
-        )}
-      </td>
-      <td>{todo.completed.toString()}</td>
-    </tr>
-  ));
+  const todo = props.todos
+    .slice()
+    .sort((item1, item2) => compareAsc(item1.start, item2.start))
+    .map(todo => {
+      let hours = differenceInMinutes(todo.end, todo.start) / 60;
+      let rhours = Math.floor(hours);
+      let minutes = (hours - rhours) * 60;
+      let rminutes = Math.round(minutes);
+      return (
+        <tr key={todo.id}>
+          <th scope="row">{i++}</th>
+          <td>{todo.title}</td>
+          <td>{format(todo.start, "PPPP")}</td>
+          <td>{format(todo.end, "PPPP")}</td>
+          <td>
+            {rhours} <b>hr</b> {rminutes} <b>mins</b>{" "}
+          </td>
+          <td>{todo.type}</td>
+          <td>
+            {differenceInCalendarDays(todo.start, new Date()) >= 0 ? (
+              differenceInCalendarDays(todo.start, new Date()) + " day"
+            ) : (
+              <p>Past date</p>
+            )}
+          </td>
+          <td>
+            <StarRatingComponent starCount={5} value={todo.rating} />
+          </td>
+          <td>{todo.completed.toString()}</td>
+        </tr>
+      );
+    });
 
   return (
     <div>
@@ -52,8 +72,10 @@ export const Summary = props => {
               <th scope="col">Title</th>
               <th scope="col">Start Date</th>
               <th scope="col">End Date</th>
+              <th scope="col">Total Time</th>
               <th scope="col">Type</th>
               <th scope="col">Due in</th>
+              <th scope="col">Urgent Level</th>
               <th scope="col">Completed</th>
             </tr>
           </thead>
