@@ -1,7 +1,7 @@
 import React from "react";
 import DateTimePicker from "react-datetime-picker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Button, Classes, Switch, Dialog } from "@blueprintjs/core";
+import { Button, Classes, Dialog } from "@blueprintjs/core";
 import StarRatingComponent from "react-star-rating-component";
 import {
   NotificationContainer,
@@ -85,7 +85,7 @@ class AddTodo extends React.Component {
     const { title, startDate, endDate, type, rating } = this.state;
     return (
       <div>
-        <div {...this.props}>
+        <div>
           <Button
             className="bp3-button bp3-minimal bp3-icon-add"
             onClick={this.handleOpen}

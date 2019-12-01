@@ -52,6 +52,15 @@ const todosData = [
     end: new Date("December 5 2019 11:00:00"),
     type: "personal",
     rating: 2
+  },
+  {
+    id: 7,
+    title: "Exam donne",
+    completed: false,
+    start: new Date(),
+    end: new Date("December 5 2019 11:00:00"),
+    type: "personal",
+    rating: 2
   }
 ];
 

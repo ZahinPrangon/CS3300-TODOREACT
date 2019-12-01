@@ -15,15 +15,15 @@ export default class DropdownMenuExample extends React.Component {
   render() {
     const { todos } = this.props;
     const todoItems = todos
+      .slice()
       .sort((item1, item2) => compareAsc(item1.start, item2.start))
-      // .filter(item => isToday(item.start))
       .map(item => {
         let hours = differenceInMinutes(item.end, item.start) / 60;
         let rhours = Math.floor(hours);
         let minutes = (hours - rhours) * 60;
         let rminutes = Math.round(minutes);
         return (
-          <Menu>
+          <Menu key={item.id}>
             <MenuItem text={`${format(item.start, "PPPP")}`}>
               {item.title} <Divider /> Ends in {format(item.end, "PPPP")}{" "}
               <Divider /> Time Required: {rhours} <b>hr</b> {rminutes}{" "}
@@ -33,25 +33,6 @@ export default class DropdownMenuExample extends React.Component {
         );
       });
 
-    // const upcomingItems = todos
-    //   .sort((item1, item2) => compareAsc(item1.start, item2.start))
-    //   .filter(item => isToday(item.start) === false)
-    //   .map(item => {
-    //     let hours = differenceInMinutes(item.end, item.start) / 60;
-    //     let rhours = Math.floor(hours);
-    //     let minutes = (hours - rhours) * 60;
-    //     let rminutes = Math.round(minutes);
-    //     return (
-    //       <Menu>
-    //         <MenuItem text={`${format(item.start, "PPPP")}`}>
-    //           {item.title} <Divider /> Ends in {format(item.end, "PPPP")}{" "}
-    //           <Divider /> Time Required: {rhours} <b>hr</b> {rminutes}{" "}
-    //           <b>min</b>
-    //         </MenuItem>
-    //       </Menu>
-    //     );
-    //   });
-
     const exampleMenu = <Menu>{todoItems}</Menu>;
     const nothingMenu = (
       <Menu>
@@ -60,7 +41,7 @@ export default class DropdownMenuExample extends React.Component {
     );
     return (
       <Example options={false} {...this.props}>
-        <span class="button__badge">{todos.length}</span>
+        <span className="button__badge">{todos.length}</span>
         <Popover
           content={todos.length > 0 ? exampleMenu : nothingMenu}
           position={Position.BOTTOM_LEFT}

@@ -5,38 +5,24 @@ import todosData from "../Todo-Data/Todo-Data";
 import "./Main-Content.styles.css";
 import { Summary } from "../Summary/Summary";
 import Header from "../Header/Header";
-
 import {
   format,
   isToday,
   isTomorrow,
   isThisWeek,
-  compareAsc,
   differenceInMinutes,
   differenceInHours
 } from "date-fns";
 
-import {
-  Classes,
-  H3,
-  Tab,
-  Tabs,
-  Divider,
-  Navbar,
-  Alignment
-} from "@blueprintjs/core";
+import { Classes, H3, Tab, Tabs, Divider } from "@blueprintjs/core";
 import { Example, handleBooleanChange } from "@blueprintjs/docs-theme";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import SecondaryNav from "../Secondary-Nav/Secondary-Nav";
-// import AddTodo from "../Add-Todo/Add-Todo";
 
 class MainContent extends React.Component {
   constructor(props) {
     super(props);
-
-    // State initialized here for todosData and Alert
     this.state = {
       todos: todosData,
       alert: null,
@@ -46,10 +32,10 @@ class MainContent extends React.Component {
       thisWeek: false,
       filtered: [],
       show: false,
-      search: "",
       activePanelOnly: false,
+      activePanelToday: false,
       animate: true,
-      navbarTabId: "Todos",
+      navbarTabId: "Today",
       vertical: false,
       view: "day",
       visible: false
@@ -58,6 +44,9 @@ class MainContent extends React.Component {
 
   toggleActiveOnly = handleBooleanChange(activePanelOnly =>
     this.setState({ activePanelOnly })
+  );
+  toggleActiveOnlyToday = handleBooleanChange(activePanelToday =>
+    this.setState({ activePanelToday })
   );
   toggleAnimate = handleBooleanChange(animate => this.setState({ animate }));
   toggleVertical = handleBooleanChange(vertical => this.setState({ vertical }));
@@ -120,19 +109,6 @@ class MainContent extends React.Component {
     });
   };
 
-  // Sets alert when empty input field is submitted
-  // setAlert = msg => {
-  //   // Sets state with the message passed into alert state
-  //   this.setState({
-  //     alert: { msg }
-  //   });
-
-  //   // Removes the alert component by setting it to null after 4 seconds
-  //   setTimeout(() => {
-  //     this.setState({ alert: null });
-  //   }, 4000);
-  // };
-
   todayTodos = () => {
     const { today } = this.state;
     this.setState({ today: !today });
@@ -162,10 +138,6 @@ class MainContent extends React.Component {
   showHome = () => {
     this.setState({ show: false });
   };
-
-  // showEvent = event => {
-  //   return alert(event.title);
-  // };
 
   render() {
     moment.locale("en-GB");
@@ -291,7 +263,7 @@ class MainContent extends React.Component {
                 Time required <b>{todayTime}</b> minutes
               </p>
             </div>
-            <p className={Classes.RUNNING_TEXT}>{todayItems}</p>
+            <div className={Classes.RUNNING_TEXT}>{todayItems}</div>
           </div>
         ) : (
           <div>
@@ -333,7 +305,15 @@ class MainContent extends React.Component {
         {workTodosItemToday.length > 0 ? (
           <div>
             <H3>Work Todos</H3>
-            <p className={Classes.RUNNING_TEXT}>{workTodosItemToday}</p>
+            <div>
+              <div className="text-right">
+                <p>
+                  You have <b>{workTodosItemToday.length}</b> work todos today
+                </p>
+                <Divider />
+              </div>
+              <div className={Classes.RUNNING_TEXT}>{workTodosItemToday}</div>
+            </div>
           </div>
         ) : (
           <div>
@@ -349,7 +329,14 @@ class MainContent extends React.Component {
         {personalTodosItemToday.length > 0 ? (
           <div>
             <H3>Personal Todos</H3>
-            <p className={Classes.RUNNING_TEXT}>{personalTodosItemToday}</p>
+            <div className="text-right">
+              <p>
+                You have <b>{personalTodosItemToday.length}</b> personal todos
+                today
+              </p>
+              <Divider />
+            </div>
+            <div className={Classes.RUNNING_TEXT}>{personalTodosItemToday}</div>
           </div>
         ) : (
           <div>
@@ -385,7 +372,7 @@ class MainContent extends React.Component {
                 ⭐⭐⭐⭐
               </span>
             </H3>
-            <p className={Classes.RUNNING_TEXT}>{urgentItemsToday}</p>
+            <div className={Classes.RUNNING_TEXT}>{urgentItemsToday}</div>
           </div>
         ) : (
           <div>
@@ -403,23 +390,24 @@ class MainContent extends React.Component {
 
     const TodayPanel = () => (
       <Tabs
-        // animate={this.state.animate}
-        id="TabsExample"
-        large={true}
-        style={{ textDecoration: "none" }}
+      // animate={this.state.animate}
+      // id="TabsExampleToday"
+      // renderActiveTabPanelOnly={this.state.activePanelToday}
+      // large={true}
+      // style={{ textDecoration: "none" }}
       >
-        <Tab id="WorkToday" title="Work" panel={<WorkPanelToday />} />
         <Tab
-          id="PersonalToday"
+          id="todayPanelAll"
+          title="Today's All Todos"
+          panel={<TodayPanelAll />}
+        />
+        <Tab id="workToday" title="Work Today" panel={<WorkPanelToday />} />
+        <Tab
+          id="personalToday"
           title="Personal"
           panel={<PersonalPanelToday />}
         />
         <Tab id="UrgentToday" title="Urgent" panel={<UrgentPanelToday />} />
-        <Tab
-          id="TodayPanelAll"
-          title="Today's All Todos"
-          panel={<TodayPanelAll />}
-        />
       </Tabs>
     );
 
@@ -447,7 +435,7 @@ class MainContent extends React.Component {
                 needs to be completed
               </p>
             </div>
-            <p className={Classes.RUNNING_TEXT}>{tommorowItems}</p>
+            <div className={Classes.RUNNING_TEXT}>{tommorowItems}</div>
           </div>
         ) : (
           <div>
@@ -554,7 +542,7 @@ class MainContent extends React.Component {
               </p>
               <Divider />
             </div>
-            <p className={Classes.RUNNING_TEXT}>{thisWeekItems}</p>
+            <div className={Classes.RUNNING_TEXT}>{thisWeekItems}</div>
           </div>
         ) : (
           <div>
@@ -570,12 +558,12 @@ class MainContent extends React.Component {
         {workTodosItem.length > 0 ? (
           <div>
             <H3>Work Todos</H3>
-            <p className={Classes.RUNNING_TEXT}>{workTodosItem}</p>
+            <div className={Classes.RUNNING_TEXT}>{workTodosItem}</div>
           </div>
         ) : (
           <div>
             <H3>Work Todos</H3>
-            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+            <div className={Classes.RUNNING_TEXT}>Nothing to show</div>
           </div>
         )}
       </div>
@@ -586,12 +574,12 @@ class MainContent extends React.Component {
         {personalTodosItem.length > 0 ? (
           <div>
             <H3>Personal Todos</H3>
-            <p className={Classes.RUNNING_TEXT}>{personalTodosItem}</p>
+            <div className={Classes.RUNNING_TEXT}>{personalTodosItem}</div>
           </div>
         ) : (
           <div>
             <H3>Personal Todos</H3>
-            <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
+            <div className={Classes.RUNNING_TEXT}>Nothing to show</div>
           </div>
         )}
       </div>
@@ -609,7 +597,7 @@ class MainContent extends React.Component {
       .filter(item => isThisWeek(item.start) === false)
       .map(item => (
         <div className="text-center">
-          <H3 key={item.id}>{format(item.start, "PPPP")}</H3>
+          <H3>{format(item.start, "PPPP")}</H3>
           <TodoItem
             key={item.id}
             handleChange={this.handleChange}
@@ -623,7 +611,7 @@ class MainContent extends React.Component {
       <div>
         <h4>Upcoming</h4>
         {upcomingTodos.length > 0 ? (
-          <p>{upcomingTodos}</p>
+          <div>{upcomingTodos}</div>
         ) : (
           <p className="font-weight-bold">
             Nothing to do in the upcoming future

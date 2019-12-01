@@ -97,7 +97,3 @@ function TodoItem(props) {
 }
 
 export default TodoItem;
-
-// {        <p className="text-center text-bold">
-//           Importance Level: {props.item.urgentLevel.toUpperCase()}
-//         </p>}

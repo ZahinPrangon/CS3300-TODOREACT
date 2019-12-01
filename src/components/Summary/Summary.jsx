@@ -25,7 +25,7 @@ export const Summary = props => {
   }
   let i = 1;
   const todo = props.todos.map(todo => (
-    <tr>
+    <tr key={todo.id}>
       <th scope="row">{i++}</th>
       <td>{todo.title}</td>
       <td>{format(todo.start, "PPPP")}</td>
