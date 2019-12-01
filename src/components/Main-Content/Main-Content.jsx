@@ -303,6 +303,18 @@ class MainContent extends React.Component {
               </p>
               <Divider />
               <p>
+                You have completed{" "}
+                <b>
+                  {
+                    todos.filter(
+                      todo => isToday(todo.start) && todo.completed === true
+                    ).length
+                  }
+                </b>{" "}
+                todos out of <b>{todayItems.length}</b> todos
+              </p>
+              <Divider />
+              <p>
                 Time required <b>{todayTime}</b> minutes
               </p>
             </div>
@@ -354,6 +366,20 @@ class MainContent extends React.Component {
                   You have <b>{workTodosItemToday.length}</b> work todos today
                 </p>
                 <Divider />
+                <p>
+                  You have completed{" "}
+                  <b>
+                    {
+                      todos.filter(
+                        todo =>
+                          isToday(todo.start) &&
+                          todo.completed === true &&
+                          todo.type === "work"
+                      ).length
+                    }
+                  </b>{" "}
+                  todos out of <b>{workTodosItemToday.length}</b> todos
+                </p>
               </div>
               <div className={Classes.RUNNING_TEXT}>{workTodosItemToday}</div>
             </div>
@@ -378,6 +404,20 @@ class MainContent extends React.Component {
                 today
               </p>
               <Divider />
+              <p>
+                You have completed{" "}
+                <b>
+                  {
+                    todos.filter(
+                      todo =>
+                        isToday(todo.start) &&
+                        todo.completed === true &&
+                        todo.type === "personal"
+                    ).length
+                  }
+                </b>{" "}
+                todos out of <b>{personalTodosItemToday.length}</b> todos
+              </p>
             </div>
             <div className={Classes.RUNNING_TEXT}>{personalTodosItemToday}</div>
           </div>
@@ -389,45 +429,6 @@ class MainContent extends React.Component {
         )}
       </div>
     );
-
-    // Panel to show most time needed in sorted manner
-    const UrgentTimePanelToday = () => {
-      const todoUrgentTime = todos
-        .slice()
-        .sort((item1, item2) => compareAsc(item1.start, item2.start))
-        .filter(item => isToday(item.start))
-        .map(item => {
-          return (
-            <TodoItem
-              key={item.id}
-              handleChange={this.handleChange}
-              item={item}
-              deleteTodo={this.deleteTodo}
-            />
-          );
-        });
-      return (
-        <div>
-          {todoUrgentTime.length > 0 ? (
-            <div>
-              <H3>Most time required Todos for today</H3>
-              <div className="text-right">
-                <p>
-                  You have <b>{todoUrgentTime.length}</b> todos today
-                </p>
-                <Divider />
-              </div>
-              <div className={Classes.RUNNING_TEXT}>{todoUrgentTime}</div>
-            </div>
-          ) : (
-            <div>
-              <H3>Most time required Todos for today</H3>
-              <p className={Classes.RUNNING_TEXT}>Nothing to show</p>
-            </div>
-          )}
-        </div>
-      );
-    };
 
     const urgentItemsToday = todos
       .filter(
@@ -488,11 +489,6 @@ class MainContent extends React.Component {
           id="SummaryToday"
           title="Summary Today"
           panel={<SummaryPanelToday />}
-        />
-        <Tab
-          id="timeToday"
-          title="Most time required"
-          panel={<UrgentTimePanelToday />}
         />
       </Tabs>
     );
