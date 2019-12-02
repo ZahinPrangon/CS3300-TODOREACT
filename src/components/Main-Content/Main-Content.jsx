@@ -546,26 +546,6 @@ class MainContent extends React.Component {
         );
       });
 
-    const SearchPanel = () => (
-      <div>
-        {urgentItems.length > 0 ? (
-          <div>
-            <H3>Search</H3>
-            <h6>
-              Todos with most urgent level or due today or takes more than 5
-              hours to complete the todo
-            </h6>
-            {urgentItems}
-          </div>
-        ) : (
-          <div>
-            <H3>URGENT</H3>
-            <p>Nothing to show</p>
-          </div>
-        )}
-      </div>
-    );
-
     const workTodosItem = todos
       .filter(todo => todo.type === "work")
       .map(item => {
@@ -594,7 +574,9 @@ class MainContent extends React.Component {
 
     let totalTimeWeek = 0;
     const thisWeekTime = todos
-      .filter(element => isThisWeek(element.start))
+      .filter(
+        element => isThisWeek(element.start) && element.completed === false
+      )
       .forEach(
         element =>
           (totalTimeWeek += differenceInHours(element.end, element.start))
@@ -677,6 +659,10 @@ class MainContent extends React.Component {
     const SummaryPanelToday = () => (
       <div>
         <H3>SUMMARY</H3>
+        <div className="font-italic text-right pb-3">
+          Click on the calendar icon to rearrange the todos according to your
+          need and view changes here
+        </div>
         <Summary todos={todaytodos} />
       </div>
     );
@@ -780,7 +766,7 @@ class MainContent extends React.Component {
                 step={60}
                 popup={true}
                 popupOffset={30}
-                onSelectEvent={this.showEvent}
+                onSelectEvent={event => alert(event.title)}
                 views={["month", "week", "day", "agenda"]}
               />
             </div>

@@ -5,7 +5,7 @@ const todosData = [
     completed: false,
     start: new Date("December 1 2019 03:24:00"),
     end: new Date("December 1 2019 05:24:00"),
-    type: "work",
+    type: "personal",
     rating: 4
   },
   {
@@ -14,7 +14,7 @@ const todosData = [
     start: new Date("December 1 2019 07:24:00"),
     end: new Date("December 1 2019 08:24:00"),
     completed: false,
-    type: "work",
+    type: "personal",
     rating: 2
   }
   // {

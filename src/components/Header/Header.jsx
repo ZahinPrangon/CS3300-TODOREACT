@@ -29,6 +29,10 @@ function Header(props) {
           </span>
         </div>
         <div className="bp3-navbar-group bp3-align-right">
+          <Button
+            onClick={props.onChangeHome}
+            className="bp3-button bp3-minimal bp3-icon-home"
+          ></Button>
           <span className="bp3-navbar-divider"></span>
           <Alert alert={alert} />
           <AddTodo addTodo={props.addTodo} setAlert={props.setAlert} />

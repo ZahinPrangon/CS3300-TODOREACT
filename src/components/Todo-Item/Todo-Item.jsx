@@ -68,9 +68,10 @@ function TodoItem(props) {
           </Moment>
           <Moment format="MMMM Do YYYY dddd">{props.item.end}</Moment>
           <p className="text-muted">
-            Time required: {rhours} <b>hr</b> {rminutes} <b>min</b>
+            <b>Time required:</b> {rhours} <b>hr</b> {rminutes} <b>min</b>
           </p>
           <Divider />
+          <p className="text-center font-italic">Importance Level</p>
           <StarRatingComponent
             name="Importance Level"
             className="text-center"

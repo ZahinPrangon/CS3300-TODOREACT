@@ -111,15 +111,12 @@ class AddTodo extends React.Component {
                 <label>Start Date</label>
 
                 <DateTimePicker
-                  // disabledDays={{ before: today }}
-                  minDate={new Date()}
                   onChange={this.onChangeStartDate}
                   value={startDate}
                   style={{ marginBottom: "5px" }}
                 />
                 <label>End Date</label>
                 <DateTimePicker
-                  minDate={new Date()}
                   onChange={this.onChangeEndDate}
                   value={endDate}
                   style={{ marginBottom: "5px" }}
@@ -130,6 +127,7 @@ class AddTodo extends React.Component {
                     display: "flex",
                     justifyContent: "left"
                   }}
+                  className="font-weight-bold"
                 >
                   <StarRatingComponent
                     className="text-center"
