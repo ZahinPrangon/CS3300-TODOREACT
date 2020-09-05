@@ -1,3 +1,6 @@
 # CS3300-TODOREACT
 
-https://todo-applet.firebaseapp.com/
+# Project 2 for CS3300
+- UI/UX design using React
+- Build a TODO application, https://todo-applet.firebaseapp.com/
+
